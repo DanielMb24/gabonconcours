@@ -64,9 +64,12 @@ export const documentService = {
         }
     },
 
-    async replaceDocument(id: string, formData: File): Promise<Document> {
+    async replaceDocument(id: string, file: File): Promise<Document> {
         try {
-            const response = await api.put(`/dossiers/${id}/replace`, formData, {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await api.put(`/documents/${id}/replace`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -89,9 +92,7 @@ export const documentService = {
     },
 
     async updateDocument(id: string, file: File): Promise<Document> {
-        const formData = new FormData();
-        formData.append('file', file);
-        return this.replaceDocument(id, formData);
+        return this.replaceDocument(id, file);
     },
 
     async updateDocumentStatus(id: string, statut: string, commentaire?: string): Promise<any> {
