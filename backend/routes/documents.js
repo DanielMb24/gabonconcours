@@ -110,26 +110,65 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
     try {
         const { id } = req.params;
         const file = req.file;
-        if (!file) return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
-
-        const doc = await Document.findById(id);
-        if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
-
-        if (doc.statut !== 'rejete') {
-            fs.unlinkSync(file.path);
-            return res.status(400).json({ success: false, message: 'Seuls les documents rejetés peuvent être remplacés' });
+        
+        console.log(`🔄 Remplacement document ${id}, fichier:`, file?.filename);
+        
+        if (!file) {
+            return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
         }
 
+        const doc = await Document.findById(id);
+        if (!doc) {
+            fs.unlinkSync(file.path);
+            return res.status(404).json({ success: false, message: 'Document introuvable' });
+        }
+
+        if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
+            fs.unlinkSync(file.path);
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Seuls les documents rejetés ou en attente peuvent être remplacés' 
+            });
+        }
+
+        // Supprimer l'ancien fichier
         const oldPath = path.join(uploadDir, doc.nom_fichier);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        if (fs.existsSync(oldPath)) {
+            try {
+                fs.unlinkSync(oldPath);
+                console.log(`✅ Ancien fichier supprimé: ${doc.nom_fichier}`);
+            } catch (err) {
+                console.error('Erreur suppression ancien fichier:', err);
+            }
+        }
 
         const newFileName = file.filename;
         const updatedDoc = await Document.replace(id, newFileName);
 
-        res.json({ success: true, message: 'Document remplacé avec succès', data: updatedDoc });
+        console.log(`✅ Document ${id} remplacé avec succès`);
+        res.json({ 
+            success: true, 
+            message: 'Document remplacé avec succès', 
+            data: {
+                id: updatedDoc.id,
+                nomdoc: updatedDoc.nomdoc,
+                type: updatedDoc.type,
+                statut: updatedDoc.statut,
+                nom_fichier: updatedDoc.nom_fichier
+            }
+        });
     } catch (error) {
-        console.error('Erreur remplacement document:', error);
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
+        console.error('❌ Erreur remplacement document:', error);
+        
+        // Nettoyer le fichier uploadé en cas d'erreur
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || 'Erreur serveur lors du remplacement' 
+        });
     }
 });
 

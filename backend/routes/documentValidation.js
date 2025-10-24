@@ -10,7 +10,7 @@ router.put('/:id', async (req, res) => {
         const {id} = req.params;
         const {statut, commentaire, admin_id} = req.body;
 
-        console.log('Validation document ID:', id, 'Statut:', statut);
+        console.log('📋 Validation document ID:', id, 'Statut:', statut, 'Commentaire:', commentaire);
 
         // Valider le statut
         if (!['valide', 'rejete'].includes(statut)) {
@@ -39,14 +39,16 @@ router.put('/:id', async (req, res) => {
         }
 
         const document = documentRows[0];
-        console.log('Document trouvé:', document);
+        console.log('📄 Document trouvé:', document.nomdoc);
 
-        // Mettre à jour le statut du document
+        // Mettre à jour le statut du document avec commentaire
         await connection.execute(`
       UPDATE documents 
-      SET statut = ?, updated_at = NOW()
+      SET statut = ?, 
+          commentaire_validation = ?,
+          updated_at = NOW()
       WHERE id = ?
-    `, [statut, id]);
+    `, [statut, commentaire || null, id]);
 
         // Créer une notification pour le candidat si on a les infos du candidat
         if (document.nupcan) {
