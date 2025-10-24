@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/backend/models/Admin.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/models/Concours.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/models/Document.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/models/Dossier.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/admin-documents.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/candidats.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/concours.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/document-validation.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/documentValidation.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/documents-extended.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/documents.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/dossiers.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/mypvit.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/notes.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/notifications.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/routes/supportRoutes.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/scripts/add-messages-table.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/backend/scripts/initDatabase.js" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/backend/scripts/initializeTables.js" dialect="GenericSQL" />
+  </component>
+</project>
