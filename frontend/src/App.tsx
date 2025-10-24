@@ -42,6 +42,8 @@ import GestionEtablissements from '@/pages/admin/GestionEtablissements';
 import GestionAdmins from '@/pages/admin/GestionAdmins';
 import Support from './components/Support';
 import CandidatDashboard from '@/pages/CandidatDashboard';
+import ConcoursFilieresManagement from '@/pages/admin/ConcoursFilieresManagement';
+import FiliereMatieresManagement from '@/pages/admin/FiliereMatieresManagement';
 import ConcoursBasedDashboard from "@/components/admin/ConcoursBasedDashboard.tsx";
 import Dashboard from './pages/admin/Dashboard';
 import SubAdminsManager from "@/components/admin/SubAdminsManager.tsx";
@@ -147,6 +149,18 @@ function App() {
                             <Route path="gestion-etablissements" element={
                                 <SuperAdminRoute>
                                     <GestionEtablissements/>
+                                </SuperAdminRoute>
+                            }/>
+                            
+                            <Route path="concours-filieres" element={
+                                <SuperAdminRoute>
+                                    <ConcoursFilieresManagement/>
+                                </SuperAdminRoute>
+                            }/>
+                            
+                            <Route path="filiere-matieres" element={
+                                <SuperAdminRoute>
+                                    <FiliereMatieresManagement/>
                                 </SuperAdminRoute>
                             }/>
                         </Route>

@@ -16,20 +16,8 @@ interface DocumentEditFormProps {
 }
 
 const DocumentEditForm: React.FC<DocumentEditFormProps> = ({ document, onUpdated, onCancel }) => {
-    const [formData, setFormData] = useState({
-        nomdoc: document.nomdoc || '',
-        file : document.files,
-        type: document.type || 'pdf',
-        statut: document.document_statut || 'en_attente',
-        commentaire: document.commentaire || '',
-    });
     const [file, setFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -39,26 +27,44 @@ const DocumentEditForm: React.FC<DocumentEditFormProps> = ({ document, onUpdated
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!file) {
+            toast({
+                title: 'Aucun fichier',
+                description: 'Veuillez sélectionner un fichier à uploader',
+                variant: 'destructive'
+            });
+            return;
+        }
+
+        // ✅ Le candidat peut uniquement remplacer le fichier, pas changer le statut
+        if (document.document_statut !== 'rejete') {
+            toast({
+                title: 'Action non autorisée',
+                description: 'Seuls les documents rejetés peuvent être remplacés',
+                variant: 'destructive'
+            });
+            return;
+        }
+        
         setIsSubmitting(true);
 
         try {
-            // ✅ Étape 1 : mise à jour du statut ou des infos
-            await documentService.updateDocumentStatus(document.id, formData.statut, formData.commentaire);
+            // Remplacement du fichier uniquement
+            await documentService.replaceDocument(document.id, file);
 
-            // ✅ Étape 2 : remplacement du fichier si un nouveau est choisi
-            if (file) {
-                await documentService.replaceDocument(document.id, formData.file);
-            }
-
-            toast({ title: 'Succès', description: 'Le document a été modifié avec succès.' });
+            toast({ 
+                title: 'Succès', 
+                description: 'Le document a été remplacé avec succès. Il est maintenant en attente de validation.' 
+            });
 
             if (onUpdated) onUpdated();
             if (onCancel) onCancel();
         } catch (error: any) {
-            console.error('Erreur modification document:', error);
+            console.error('Erreur remplacement document:', error);
             toast({
                 title: 'Erreur',
-                description: error.message || 'Impossible de modifier le document',
+                description: error.message || 'Impossible de remplacer le document',
                 variant: 'destructive',
             });
         } finally {
@@ -68,75 +74,52 @@ const DocumentEditForm: React.FC<DocumentEditFormProps> = ({ document, onUpdated
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nom du document */}
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4 mb-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    ℹ️ Vous ne pouvez remplacer que les documents rejetés. Le nouveau fichier sera soumis pour validation.
+                </p>
+            </div>
+
+            {/* Informations du document (lecture seule) */}
             <div>
-                <Label htmlFor="nomdoc">Nom du document</Label>
+                <Label>Nom du document</Label>
                 <Input
-                    id="nomdoc"
-                    name="nomdoc"
-                    value={formData.nomdoc}
-                    onChange={handleChange}
-                    placeholder="Ex: Relevé de notes"
+                    value={document.nomdoc}
+                    disabled
+                    className="bg-muted"
                 />
             </div>
 
-            {/* Type */}
             <div>
-                <Label htmlFor="type">Type</Label>
-                <Select
-                    onValueChange={value => setFormData(prev => ({ ...prev, type: value }))}
-                    value={formData.type}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner un type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="pdf">PDF</SelectItem>
-                        <SelectItem value="image">Image</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            {/* Statut */}
-            <div>
-                <Label htmlFor="statut">Statut</Label>
-                <Select
-                    onValueChange={value => setFormData(prev => ({ ...prev, statut: value }))}
-                    value={formData.statut}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Choisir un statut" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="en_attente">En attente</SelectItem>
-                        <SelectItem value="valide">Validé</SelectItem>
-                        <SelectItem value="rejete">Rejeté</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            {/* Commentaire */}
-            <div>
-                <Label htmlFor="commentaire">Commentaire (optionnel)</Label>
-                <Textarea
-                    id="commentaire"
-                    name="commentaire"
-                    value={formData.commentaire}
-                    onChange={handleChange}
-                    placeholder="Raison du rejet, remarques administratives, etc."
+                <Label>Statut actuel</Label>
+                <Input
+                    value={document.document_statut === 'rejete' ? 'Rejeté' : 
+                           document.document_statut === 'valide' ? 'Validé' : 'En attente'}
+                    disabled
+                    className="bg-muted"
                 />
+                {document.commentaire_validation && (
+                    <p className="text-sm text-destructive mt-2">
+                        Raison du rejet: {document.commentaire_validation}
+                    </p>
+                )}
             </div>
 
-            {/* Fichier */}
+            {/* Fichier à uploader */}
             <div>
-                <Label htmlFor="file">Remplacer le fichier (facultatif)</Label>
+                <Label htmlFor="file">Nouveau fichier *</Label>
                 <Input
                     id="file"
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={handleFileChange}
+                    required
                 />
-                {file && <p className="text-sm text-muted-foreground mt-1">Nouveau fichier : {file.name}</p>}
+                {file && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                        ✅ Fichier sélectionné : {file.name}
+                    </p>
+                )}
             </div>
 
             {/* Boutons */}
@@ -144,16 +127,16 @@ const DocumentEditForm: React.FC<DocumentEditFormProps> = ({ document, onUpdated
                 <Button variant="outline" type="button" onClick={onCancel}>
                     Annuler
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || !file}>
                     {isSubmitting ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Enregistrement...
+                            Remplacement en cours...
                         </>
                     ) : (
                         <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Enregistrer
+                            <Upload className="mr-2 h-4 w-4" />
+                            Remplacer le document
                         </>
                     )}
                 </Button>

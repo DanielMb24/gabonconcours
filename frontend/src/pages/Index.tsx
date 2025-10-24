@@ -11,6 +11,7 @@ import { apiService } from '@/services/api';
 import Layout from '@/components/Layout';
 import Illustration from '@/components/Illustrations';
 import { useLanguage } from '@/contexts/LanguageContext';
+import HomeAnnouncements from '@/components/HomeAnnouncements';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -145,6 +146,13 @@ const Index = () => {
                 <Illustration type="hero" size="xl" className="drop-shadow-2xl" />
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Annonces et statistiques */}
+        <section className="py-16 bg-slate-50 dark:bg-slate-900">
+          <div className="container mx-auto px-4">
+            <HomeAnnouncements />
           </div>
         </section>
 

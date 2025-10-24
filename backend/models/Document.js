@@ -179,19 +179,36 @@ class Document {
         const doc = await this.findById(id);
         if (!doc) throw new Error('Document non trouvé');
 
-        // Accepter remplacement uniquement si document rejeté (ou si vous souhaitez 'en_attente' aussi, ajuster ici)
-        if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
-            throw new Error('Seuls les documents rejetés ou en attente peuvent être remplacés');
+        // ✅ Remplacement uniquement pour documents rejetés
+        if (doc.statut !== 'rejete') {
+            throw new Error('Seuls les documents rejetés peuvent être remplacés');
         }
 
         await connection.execute(
             `UPDATE documents
-             SET nom_fichier = ?, statut = ?, commentaire_validation = ?, updated_at = NOW()
+             SET nom_fichier = ?, statut = 'en_attente', commentaire_validation = 'Document remplacé - en attente de validation', updated_at = NOW()
              WHERE id = ?`,
-            [newFileName, 'en_attente', 'Document remplacé - en attente de validation', id]
+            [newFileName, id]
         );
 
         return this.findById(id);
+    }
+    
+    static async countByNupcan(nupcan) {
+        const connection = getConnection();
+        const [rows] = await connection.execute(
+            `SELECT COUNT(*) as total 
+             FROM documents d
+             JOIN dossiers dos ON d.id = dos.document_id
+             WHERE dos.nupcan = ?`,
+            [nupcan]
+        );
+        return rows[0].total;
+    }
+    
+    static async canAddDocument(nupcan) {
+        const total = await this.countByNupcan(nupcan);
+        return total < 6; // Maximum 6 documents (3 requis + 3 optionnels)
     }
     static async findAll() {
         const connection = getConnection();
