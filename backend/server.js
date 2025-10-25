@@ -144,7 +144,7 @@ app.use('/api/candidatures', upload.fields([
 app.use('/api/subadmins', subAdminsRoutes);
 app.use('/api/administrateurs', administrateursRoutes);
 app.use('/api/candidats', candidatsExportRoutes);
-app.use('/api/documents', documentsReplacementRoutes); // Remplacement de documents
+// Routes documents candidats AVANT la route générale
 app.use('/api/documents/candidate', documentsCandidateRoutes); // Documents candidats
 app.use('/api/super-admin', superAdminCrudRoutes); // CRUD SuperAdmin
 app.use('/api/admin', adminConcoursConandidaturesRoutes); // Candidatures par concours
