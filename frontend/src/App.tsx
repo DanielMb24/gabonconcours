@@ -6,7 +6,7 @@ import {LanguageProvider} from '@/contexts/LanguageContext';
 
 // Pages publiques
 import NewIndex from '@/pages/NewIndex';
-import Index from '@/pages/Index';
+import APropos from '@/pages/Index';
 
 import Concours from '@/pages/Concours';
 import Candidature from '@/pages/Candidature';
@@ -50,6 +50,9 @@ import ConcoursBasedDashboard from "@/components/admin/ConcoursBasedDashboard.ts
 import Dashboard from './pages/admin/Dashboard';
 import SubAdminsManager from "@/components/admin/SubAdminsManager.tsx";
 import AdminProfileSettings from "@/components/admin/AdminProfileSettings.tsx";
+import AdminLogsView from "@/pages/admin/AdminLogsView.tsx";
+import SuperAdminStatistics from "@/pages/admin/SuperAdminStatistics.tsx";
+import SuperAdminSupport from "@/pages/admin/SuperAdminSupport.tsx";
 
 
 const queryClient = new QueryClient({
@@ -81,7 +84,7 @@ function App() {
                     <Routes>
                         {/* Routes publiques */}
                         <Route path="/" element={<NewIndex/>}/>
-                        <Route path="/about" element={<Index/>}/>
+                        <Route path="/about" element={<APropos/>}/>
 
                         <Route path="/support" element={<Support/>}/>
                         <Route path="/concours" element={<Concours/>}/>
@@ -167,29 +170,24 @@ function App() {
                                 </SuperAdminRoute>
                             }/>
 
+
                             <Route path="logs" element={
                                 <SuperAdminRoute>
-                                    <React.Suspense fallback={<div>Chargement...</div>}>
-                                        {React.createElement(require('@/pages/admin/AdminLogsView').default)}
-                                    </React.Suspense>
+                                    <AdminLogsView/>
                                 </SuperAdminRoute>
                             }/>
-
                             <Route path="statistiques" element={
                                 <SuperAdminRoute>
-                                    <React.Suspense fallback={<div>Chargement...</div>}>
-                                        {React.createElement(require('@/pages/admin/SuperAdminStatistics').default)}
-                                    </React.Suspense>
+                                    <SuperAdminStatistics/>
+                                </SuperAdminRoute>
+                            }/>
+                            <Route path="support" element={
+                                <SuperAdminRoute>
+                                    <SuperAdminSupport/>
                                 </SuperAdminRoute>
                             }/>
 
-                            <Route path="support" element={
-                                <SuperAdminRoute>
-                                    <React.Suspense fallback={<div>Chargement...</div>}>
-                                        {React.createElement(require('@/pages/admin/SuperAdminSupport').default)}
-                                    </React.Suspense>
-                                </SuperAdminRoute>
-                            }/>
+
                         </Route>
 
                         <Route path="*" element={<NotFound/>}/>
