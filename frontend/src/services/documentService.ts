@@ -69,7 +69,7 @@ export const documentService = {
             const formData = new FormData();
             formData.append('file', file);
             
-            const response = await api.put(`/documents/${id}/replace`, formData, {
+            const response = await api.put(`/dossiers/documents/${id}/replace`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -108,7 +108,7 @@ export const documentService = {
     async deleteDocument(nupcan: string, documentId: string): Promise<void> {
         try {
             console.log('Suppression document:', documentId);
-            const response = await apiService.makeRequest(`/documents/${documentId}`, 'DELETE');
+            const response = await apiService.makeRequest(`/dossiers/${documentId}`, 'DELETE');
             if (!response.success) throw new Error(response.message);
         } catch (error) {
             console.error('Erreur suppression document:', error);

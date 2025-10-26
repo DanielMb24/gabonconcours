@@ -266,7 +266,8 @@ router.get('/concours/:concoursId/candidats', authenticateToken, async (req, res
     }
 });
 
-// POST - Valider un document
+
+
 router.post('/documents/:documentId/validate', authenticateToken, async (req, res) => {
     try {
         const {documentId} = req.params;
@@ -374,11 +375,11 @@ router.post('/documents/:documentId/validate', authenticateToken, async (req, re
             //
             //
             // try {
-                await emailService.sendAdminCredentials({
-                    ...emailSubject,
-                    html: emailHTML
-                });
-                console.log(`Email envoyé avec succès à ${document.maican}`);
+            await emailService.sendDocumentValidationEmail({
+                ...emailSubject,
+                html: emailHTML
+            });
+            console.log(`Email envoyé avec succès à ${document.maican}`);
             // } catch (emailError) {
             //     console.error('Erreur envoi email:', emailError);
             //     // On continue même si l'email échoue
@@ -402,5 +403,142 @@ router.post('/documents/:documentId/validate', authenticateToken, async (req, re
         });
     }
 });
+
+// // POST - Valider un document
+// router.post('/documents/:documentId/validate', authenticateToken, async (req, res) => {
+//     try {
+//         const {documentId} = req.params;
+//         const {statut, motif} = req.body;
+//
+//         if (!['valide', 'rejete'].includes(statut)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Statut de validation invalide'
+//             });
+//         }
+//
+//         // Récupérer les informations du document et du candidat
+//         const [documentInfo] = await pool.execute(`
+//       SELECT
+//         d.*,
+//         c.nomcan,
+//         c.prncan,
+//         c.maican,
+//         c.nupcan,
+//         co.etablissement_id
+//       FROM documents d
+//       JOIN candidats c ON d.candidat_nupcan = c.nupcan
+//       JOIN participations p ON c.nupcan = p.candidat_nupcan
+//       JOIN concours co ON p.concours_id = co.id
+//       WHERE d.id = ?
+//     `, [documentId]);
+//
+//         if (documentInfo.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Document non trouvé'
+//             });
+//         }
+//
+//         const document = documentInfo[0];
+//
+//         // Vérifier l'autorisation
+//         if (req.admin.role !== 'super_admin' && req.admin.etablissement_id !== document.etablissement_id) {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: 'Accès non autorisé'
+//             });
+//         }
+//
+//         // Mettre à jour le statut du document
+//         await pool.execute(`
+//       UPDATE documents
+//       SET statut_validation = ?,
+//           motif_rejet = ?,
+//           date_validation = NOW(),
+//           admin_validateur_id = ?
+//       WHERE id = ?
+//     `, [statut, motif || null, req.admin.id, documentId]);
+//
+//
+//
+//
+//
+//
+//         // Envoyer la notification par email
+//         try {
+//             const emailSubject = `Validation de document - ${document.nom_document}`;
+//             const statusText = statut === 'valide' ? 'VALIDÉ' : 'REJETÉ';
+//             const statusColor = statut === 'valide' ? '#155724' : '#721c24';
+//             const bgColor = statut === 'valide' ? '#d4edda' : '#f8d7da';
+//             const borderColor = statut === 'valide' ? '#c3e6cb' : '#f5c6cb';
+//
+//             const emailHTML = `
+//         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+//           <h2 style="color: #333;">Validation de document</h2>
+//           <p>Bonjour ${document.prncan} ${document.nomcan},</p>
+//
+//           <div style="background-color: ${bgColor}; border: 1px solid ${borderColor}; padding: 15px; margin: 20px 0; border-radius: 5px;">
+//             <h3 style="margin: 0; color: ${statusColor};">Document ${statusText}</h3>
+//             <p style="margin: 10px 0 0 0;"><strong>Document:</strong> ${document.nom_document}</p>
+//             ${motif ? `<p style="margin: 10px 0 0 0;"><strong>Commentaire:</strong> ${motif}</p>` : ''}
+//           </div>
+//
+//           <p>Numéro de candidature: <strong>${document.nupcan}</strong></p>
+//           <p>Validé par: <strong>${req.admin.prenom} ${req.admin.nom}</strong></p>
+//           <p>Date de validation: <strong>${new Date().toLocaleDateString('fr-FR')}</strong></p>
+//
+//           ${statut === 'rejete' ?
+//                 '<p style="color: #721c24;"><strong>Action requise:</strong> Veuillez soumettre un nouveau document corrigé via votre espace candidat.</p>' :
+//                 '<p style="color: #155724;">Votre dossier progresse bien. Vous serez informé des prochaines étapes.</p>'
+//             }
+//
+//           <hr style="margin: 30px 0;" />
+//           <p style="color: #666; font-size: 12px;">
+//             Ce message a été envoyé automatiquement depuis le système de gestion des candidatures.
+//             Ne pas répondre à ce message.
+//           </p>
+//         </div>
+//       `;
+//
+//             // await transporter.sendMail({
+//             //     from: process.env.SMTP_FROM || 'noreply@concours.com',
+//             //     to: document.maican,
+//             //     subject: emailSubject,
+//             //     html: emailHTML
+//             // });
+//             //
+//             //
+//             //
+//             //
+//             // try {
+//                 await emailService.sendAdminCredentials({
+//                     ...emailSubject,
+//                     html: emailHTML
+//                 });
+//                 console.log(`Email envoyé avec succès à ${document.maican}`);
+//             // } catch (emailError) {
+//             //     console.error('Erreur envoi email:', emailError);
+//             //     // On continue même si l'email échoue
+//             // }
+//
+//         } catch (emailError) {
+//             console.error('Erreur envoi email:', emailError);
+//             // Ne pas faire échouer la validation si l'email ne marche pas
+//         }
+//
+//         res.json({
+//             success: true,
+//             message: `Document ${statut === 'valide' ? 'validé' : 'rejeté'} avec succès`
+//         });
+//
+//     } catch (error) {
+//         console.error('Erreur validation document:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Erreur serveur lors de la validation'
+//         });
+//     }
+// });
 
 module.exports = router;

@@ -21,36 +21,36 @@ const StatsSection = () => {
             color: 'text-blue-500',
             bgColor: 'bg-blue-50'
         },
-        // {
-        //   icon: CheckCircle,
-        //   value: isLoading ? '...' : stats?.concoursGratuits || '12',
-        //   label: 'Concours Gorri',
-        //   sublabel: '100% Gratuits',
-        //   color: 'text-green-500',
-        //   bgColor: 'bg-green-50'
-        // },
-        // {
-        //   icon: Users,
-        //   value: isLoading ? '...' : stats?.candidatsInscrits?.toLocaleString() || '2,847',
-        //   label: 'Candidats Inscrits',
-        //   sublabel: 'Cette année',
-        //   color: 'text-orange-500',
-        //   bgColor: 'bg-orange-50'
-        // },
-        // {
-        //   icon: TrendingUp,
-        //   value: isLoading ? '...' : `${stats?.tauxReussite || 85}%`,
-        //   label: 'Taux de Réussite',
-        //   sublabel: 'Moyenne générale',
-        //   color: 'text-purple-500',
-        //   bgColor: 'bg-purple-50'
-        // }
+        {
+          icon: CheckCircle,
+          value: isLoading ? '...' : stats?.concoursGratuits || '12',
+          label: 'Concours Gorri',
+          sublabel: '100% Gratuits',
+          color: 'text-green-500',
+          bgColor: 'bg-green-50'
+        },
+        {
+          icon: Users,
+          value: isLoading ? '...' : stats?.candidatsInscrits?.toLocaleString() || '2,847',
+          label: 'Candidats Inscrits',
+          sublabel: 'Cette année',
+          color: 'text-orange-500',
+          bgColor: 'bg-orange-50'
+        },
+        {
+          icon: TrendingUp,
+          value: isLoading ? '...' : `${stats?.tauxReussite || 85}%`,
+          label: 'Taux de Réussite',
+          sublabel: 'Moyenne générale',
+          color: 'text-purple-500',
+          bgColor: 'bg-purple-50'
+        }
     ];
 
     return (
         <section className="py-8 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {statisticsData.map((stat, index) => (
                         <Card key={index} className="text-center hover:shadow-lg transition-shadow border-0 shadow-sm">
                             <CardContent className="p-6">
@@ -62,18 +62,11 @@ const StatsSection = () => {
                                     {stat.value}
                                 </div>
                                 <div className="text-muted-foreground font-medium">{stat.label}</div>
-                                {/*<div className={`text-sm ${stat.color} mt-1`}>*/}
-                                {/*  {stat.sublabel}*/}
-                                {/*</div>*/}
+                                <div className={`text-sm ${stat.color} mt-1`}>
+                                  {stat.sublabel}
+                                </div>
 
-                                <Button
-                                    variant="outline"
-                                    size="lg"
-                                    className={`text-sm ${stat.color} mt-1`}
-                                    onClick={() => handleNavigation('/concours')}
-                                >
-                                    {stat.sublabel}
-                                </Button>
+
                             </CardContent>
                         </Card>
                     ))}

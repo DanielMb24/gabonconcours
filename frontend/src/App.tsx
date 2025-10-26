@@ -5,7 +5,9 @@ import {AdminAuthProvider, useAdminAuth} from '@/contexts/AdminAuthContext';
 import {LanguageProvider} from '@/contexts/LanguageContext';
 
 // Pages publiques
-import Index from '@/pages/NewIndex';
+import NewIndex from '@/pages/NewIndex';
+import Index from '@/pages/Index';
+
 import Concours from '@/pages/Concours';
 import Candidature from '@/pages/Candidature';
 import ChoixFiliere from '@/pages/ChoixFiliere';
@@ -78,7 +80,8 @@ function App() {
                     <Router>
                     <Routes>
                         {/* Routes publiques */}
-                        <Route path="/" element={<Index/>}/>
+                        <Route path="/" element={<NewIndex/>}/>
+                        <Route path="/about" element={<Index/>}/>
 
                         <Route path="/support" element={<Support/>}/>
                         <Route path="/concours" element={<Concours/>}/>
@@ -157,7 +160,7 @@ function App() {
                                     <ConcoursFilieresManagement/>
                                 </SuperAdminRoute>
                             }/>
-                            
+
                             <Route path="filiere-matieres" element={
                                 <SuperAdminRoute>
                                     <FiliereMatieresManagement/>

@@ -401,7 +401,7 @@ import WhyChooseSection from '@/components/WhyChooseSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import {Card, CardContent} from "@mui/material";
 
-const Index = () => {
+const NewIndex = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
@@ -426,21 +426,21 @@ const Index = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button
-                        size="lg"
-                        className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg"
-                        onClick={() => handleNavigation('/concours')}
-                    >
-                      Voir Concours
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                    {/*<Button*/}
+                    {/*    size="lg"*/}
+                    {/*    className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg"*/}
+                    {/*    onClick={() => handleNavigation('/concours')}*/}
+                    {/*>*/}
+                    {/*  Voir Concours*/}
+                    {/*  <ArrowRight className="ml-2 h-5 w-5" />*/}
+                    {/*</Button>*/}
                     <Button
                         variant="outline"
                         size="lg"
-                        className="px-8 py-4 text-lg"
+                        className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg"
                         onClick={() => handleNavigation('/connexion')}
                     >
-                      Se connecter
+                     Suivre ma candidature
                     </Button>
                   </div>
                 </div>
@@ -625,4 +625,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default NewIndex;

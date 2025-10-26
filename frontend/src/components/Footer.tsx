@@ -1,44 +1,159 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+    GraduationCap,
+    Mail,
+    Phone,
+    MapPin,
+    Facebook,
+    Twitter,
+    Instagram,
+    Linkedin
+} from 'lucide-react';
 
-const Footer = () => {
+const Footer: React.FC = () => {
+    const currentYear = new Date().getFullYear();
+
     return (
-        <footer className="bg-gray-50 border-t mt-auto">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div>
-                        <div className="flex items-center space-x-3 mb-4">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold">G</span>
+        <footer className="bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+            <div className="container mx-auto px-4 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* À propos */}
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg">
+                                <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            <span className="font-bold text-lg">GabConcours</span>
+                            <span className="text-xl font-bold">GABConcours</span>
                         </div>
-                        <p className="text-muted-foreground text-sm">
-                            Plateforme officielle de candidature aux concours publics de la République Gabonaise.
+                        <p className="text-gray-300 text-sm">
+                            Plateforme officielle de gestion des concours d'entrée dans les établissements d'enseignement supérieur au Gabon.
                         </p>
+                        <div className="flex space-x-3">
+                            <a href="#" className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                                <Facebook className="h-5 w-5" />
+                            </a>
+                            <a href="#" className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                                <Twitter className="h-5 w-5" />
+                            </a>
+                            <a href="#" className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                                <Instagram className="h-5 w-5" />
+                            </a>
+                            <a href="#" className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                                <Linkedin className="h-5 w-5" />
+                            </a>
+                        </div>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold mb-4">Liens utiles</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" className="hover:text-primary">Guide du candidat</a></li>
-                            <li><a href="#" className="hover:text-primary">FAQ</a></li>
-                            <li><a href="#" className="hover:text-primary">Contact</a></li>
-                            <li><a href="#" className="hover:text-primary">Aide technique</a></li>
+                    {/* Liens rapides */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Liens rapides</h3>
+                        <ul className="space-y-2">
+                            <li>
+                                <Link to="/" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    Accueil
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/concours" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    Concours disponibles
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    À propos
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/support" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    Contact
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/connexion" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    Connexion
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold mb-4">Contact</h3>
-                        <div className="space-y-2 text-sm text-muted-foreground">
-                            <p>Email: gabonconcours.com</p>
-                            <p>Téléphone: +241 74604327</p>
-                            <p>Disponible 24h/24 - 7j/7</p>
-                        </div>
+                    {/* Services */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Services</h3>
+                        <ul className="space-y-2">
+                            <li>
+                                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                                    Candidature en ligne
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                                    Suivi de dossier
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                                    Paiement sécurisé
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                                    Résultats
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                                    Support 24/7
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Contact */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Contact</h3>
+                        <ul className="space-y-3">
+                            <li className="flex items-start space-x-3">
+                                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <span className="text-gray-300 text-sm">
+                  Libreville, Gabon<br />
+                  BP 1234
+                </span>
+                            </li>
+                            <li className="flex items-center space-x-3">
+                                <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+                                <span className="text-gray-300 text-sm">
+                  +241 74604327
+                </span>
+                            </li>
+                            <li className="flex items-center space-x-3">
+                                <Mail className="h-5 w-5 text-primary flex-shrink-0" />
+                                <a href="mailto:contact@gabconcours.ga" className="text-gray-300 hover:text-white text-sm">
+                                    contact@gabconcours.ga
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
-                    <p>&copy; 2024 République Gabonaise - Tous droits réservés</p>
+                {/* Bottom Bar */}
+                <div className="mt-12 pt-8 border-t border-white/10">
+                    <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        <p className="text-gray-400 text-sm text-center md:text-left">
+                            © {currentYear} GABConcours. Tous droits réservés.
+                        </p>
+                        <div className="flex space-x-6 text-sm">
+                            <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                                Politique de confidentialité
+                            </Link>
+                            <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
+                                Conditions d'utilisation
+                            </Link>
+                            <Link to="/legal" className="text-gray-400 hover:text-white transition-colors">
+                                Mentions légales
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>
