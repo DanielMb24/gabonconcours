@@ -62,7 +62,7 @@ const APropos = () => {
                             className="flex justify-center"
                         >
                             <img
-                                src="/assets/illustrations/about_digital.svg"
+                                src="../../public/télécharger.webp"
                                 alt="Illustration numérique"
                                 className="w-full max-w-lg drop-shadow-lg"
                             />
