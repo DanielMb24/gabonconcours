@@ -48,20 +48,20 @@ const DocumentValidationModal: React.FC<DocumentValidationModalProps> = ({
         try {
             await onValidate(document.id, statut, commentaire);
 
-            // Envoyer une notification par email au candidat
-            if (candidatInfo?.maican) {
-                try {
-                    await receiptService.sendDocumentValidationEmail(
-                        candidatInfo.maican,
-                        document.nomdoc,
-                        statut,
-                        commentaire
-                    );
-                } catch (emailError) {
-                    console.error('Erreur envoi email:', emailError);
-                    // Ne pas bloquer la validation si l'email échoue
-                }
-            }
+            // // Envoyer une notification par email au candidat
+            // if (candidatInfo?.maican) {
+            //     try {
+            //         await receiptService.sendDocumentValidationEmail(
+            //             candidatInfo.maican,
+            //             document.nomdoc,
+            //             statut,
+            //             commentaire
+            //         );
+            //     } catch (emailError) {
+            //         console.error('Erreur envoi email:', emailError);
+            //         // Ne pas bloquer la validation si l'email échoue
+            //     }
+            // }
 
             setCommentaire('');
             setValidationType(null);

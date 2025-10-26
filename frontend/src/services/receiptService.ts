@@ -138,23 +138,23 @@ class ReceiptService {
 
     // Nouvelle méthode pour envoyer une notification de validation de document
     // Nouvelle méthode pour envoyer une notification de validation de document
-    async sendDocumentValidationEmail(candidatEmail: string, documentName: string, statut: 'valide' | 'rejete', commentaire?: string): Promise<void> {
-        try {
-            const response = await apiService.makeRequest('/email/document-validation', 'POST', {
-                maican: candidatEmail,
-                documentName,
-                statut,
-                commentaire
-            });
-
-            if (!response.success) {
-                throw new Error(response.message || 'Erreur lors de l\'envoi de la notification');
-            }
-        } catch (error) {
-            console.error('Erreur envoi notification validation:', error);
-            throw error;
-        }
-    }
+    // async sendDocumentValidationEmail(maican: string, documentName: string, statut: 'valide' | 'rejete', commentaire?: string): Promise<void> {
+    //     try {
+    //         const response = await apiService.makeRequest('/email/document-validation', 'POST', {
+    //             maican: maican ,
+    //             documentName,
+    //             statut,
+    //             commentaire
+    //         });
+    //
+    //         if (!response.success) {
+    //             throw new Error(response.message || 'Erreur lors de l\'envoi de la notification');
+    //         }
+    //     } catch (error) {
+    //         console.error('Erreur envoi notification validation:', error);
+    //         throw error;
+    //     }
+    // }
 
 }
 
