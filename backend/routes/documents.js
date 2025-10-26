@@ -111,7 +111,7 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
         const { id } = req.params;
         const file = req.file;
         
-        console.log(`🔄 Remplacement document ${id}, fichier:`, file?.filename);
+        console.log(`Remplacement document ${id}, fichier:`, file?.filename);
         
         if (!file) {
             return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });

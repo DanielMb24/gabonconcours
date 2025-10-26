@@ -50,13 +50,13 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({isOpen, onClose, documen
         documentUrl = `http://localhost:3001/${documentPath.replace(/\\/g, '/')}`;
     }
 
-    // useEffect(() => {
-    //   if (documentUrl) {
-    //     console.log('URL du document :', documentUrl);
-    //   } else {
-    //     console.warn('URL du document est null ou indéfinie');
-    //   }
-    // }, [documentUrl]);
+    useEffect(() => {
+   if (documentUrl) {
+       console.log('URL du document :', documentUrl);
+      } else {
+       console.warn('URL du document est null ou indéfinie');
+     }
+ }, [documentUrl]);
 
     const isImage = documentPath && /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(documentPath);
     const isPDF = documentPath && /\.pdf$/i.test(documentPath);

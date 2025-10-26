@@ -378,11 +378,16 @@ router.delete('/:id', async (req, res) => {
         });
     }
 });
-// ✅ Route de remplacement d’un document (cohérente avec le frontend)
+
+
+
+// PUT /api/dossiers/documents/:id/replace
 router.put('/documents/:id/replace', upload.single('file'), async (req, res) => {
+    const fs = require('fs');
     try {
         const { id } = req.params;
         const file = req.file;
+        const { nomdoc } = req.body; // récupéré depuis le FormData frontend
 
         if (!file) {
             return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
@@ -390,38 +395,48 @@ router.put('/documents/:id/replace', upload.single('file'), async (req, res) => 
 
         const connection = require('../config/database').getConnection();
         const [rows] = await connection.execute('SELECT * FROM documents WHERE id = ?', [id]);
-
         if (rows.length === 0) {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
             return res.status(404).json({ success: false, message: 'Document introuvable' });
         }
 
         const doc = rows[0];
-
         if (doc.statut !== 'rejete') {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
             return res.status(400).json({
                 success: false,
-                message: 'Seuls les documents rejetés peuvent être remplacés'
+                message: 'Seuls les documents rejetés peuvent être remplacés.'
             });
         }
 
-        // Supprimer l’ancien fichier si existe
-        const oldPath = path.join('uploads/documents', doc.nom_fichier);
-        if (existsSync(oldPath)) unlinkSync(oldPath);
+        // Suppression de l'ancien fichier s'il existe
+        const oldPath = path.join('uploads/documents', doc.nom_fichier || '');
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
 
-        // Nouveau fichier
-        const newFileName = `doc-${Date.now()}-${file.originalname}`;
-        const newPath = path.join('uploads/documents', newFileName);
-        renameSync(file.path, newPath);
+        // Nouveau fichier (multer l’a déjà placé dans uploads/documents)
+        const newFileName = file.filename;
+        const newFilePath = path.join('uploads/documents', newFileName);
 
+        // ✅ Mise à jour de la base de données (corrigée)
         await connection.execute(
-            'UPDATE documents SET nom_fichier = ?, statut = "en_attente", updated_at = NOW() WHERE id = ?',
-            [newFileName, id]
+            `
+            UPDATE documents
+            SET nomdoc = ?, nom_fichier = ?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
+            WHERE id = ?
+            `,
+            [nomdoc || doc.nomdoc, newFileName, newFilePath, id]
         );
 
         res.json({
             success: true,
-            message: 'Document remplacé avec succès',
-            data: { id, nom_fichier: newFileName }
+            message: 'Document remplacé avec succès.',
+            data: {
+                id,
+                nomdoc: nomdoc || doc.nomdoc,
+                nom_fichier: newFileName,
+                chemin_fichier: newFilePath,
+                statut: 'en_attente'
+            }
         });
     } catch (error) {
         console.error('Erreur remplacement document:', error);
@@ -430,43 +445,4 @@ router.put('/documents/:id/replace', upload.single('file'), async (req, res) => 
 });
 
 
-// ... en-tête inchangée ...
-
-// PUT /api/dossiers/documents/:id/replace  (ou conserver /documents/:id/replace si besoin)
-router.put('/documents/:id/replace', upload.single('file'), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const file = req.file;
-        if (!file) return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
-
-        const connection = require('../config/database').getConnection();
-        const [rows] = await connection.execute('SELECT * FROM documents WHERE id = ?', [id]);
-        if (rows.length === 0) {
-            if (file.path && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-            return res.status(404).json({ success: false, message: 'Document introuvable' });
-        }
-
-        const doc = rows[0];
-        if (doc.statut !== 'rejete') {
-            if (file.path && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-            return res.status(400).json({ success: false, message: 'Seuls les documents rejetés peuvent être remplacés' });
-        }
-
-        // supprimer ancien fichier
-        const oldPath = path.join(__dirname, '..', 'uploads', 'documents', doc.nom_fichier || '');
-        if (existsSync(oldPath)) unlinkSync(oldPath);
-
-        // nouveau fichier (multer a déjà écrit dans uploads/documents)
-        const newFileName = file.filename;
-        await connection.execute(
-            'UPDATE documents SET nom_fichier = ?, statut = "en_attente", updated_at = NOW() WHERE id = ?',
-            [newFileName, id]
-        );
-
-        res.json({ success: true, message: 'Document remplacé avec succès', data: { id, nom_fichier: newFileName } });
-    } catch (error) {
-        console.error('Erreur remplacement document:', error);
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
-    }
-});
 module.exports = router;

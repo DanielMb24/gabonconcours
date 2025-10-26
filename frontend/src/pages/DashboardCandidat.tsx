@@ -57,7 +57,9 @@
             const [isDownloading, setIsDownloading] = useState(false);
             const [isSendingEmail, setIsSendingEmail] = useState(false);
             const [isDownloadingPNG, setIsDownloadingPNG] = useState(false);
-            const [selectedDocument, setSelectedDocument] = useState<any | null>(null);
+           const [selectedDocumentToView, setSelectedDocumentToView] = useState<any | null>(null);
+const [selectedDocumentToEdit, setSelectedDocumentToEdit] = useState<any | null>(null);
+
             const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'notes'>('overview');
             const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
             const [documentToReplace, setDocumentToReplace] = useState<any | null>(null);
@@ -775,23 +777,20 @@
                                                         {/* Boutons d'action */}
                                                         <div className="flex space-x-2">
                                                             {/* Voir */}
-                                                            {/*<Button*/}
-                                                            {/*    variant="outline"*/}
-                                                            {/*    size="sm"*/}
-                                                            {/*    onClick={() => setSelectedDocument(doc)}*/}
-                                                            {/*>*/}
-                                                            {/*    <Eye className="h-4 w-4 mr-2" /> Voir*/}
-                                                            {/*</Button>*/}
+                                                         {/* Voir */}
+<Button variant="outline" size="sm" onClick={() => setSelectedDocumentToView(doc)}>
+    <Eye className="h-4 w-4 mr-2" /> Voir
+</Button>
 
-                                                            {/* Modifier */}
-                                                            <Button
-                                                                variant="default"
-                                                                size="sm"
-                                                                onClick={() => setSelectedDocument(doc)}
-                                                                disabled={!canModify}
-                                                            >
-                                                                <Edit className="h-4 w-4 mr-2" /> Modifier
-                                                            </Button>
+{/* Modifier */}
+<Button
+    variant="default"
+    size="sm"
+    onClick={() => setSelectedDocumentToEdit(doc)}
+    disabled={!canModify}
+>
+    <Edit className="h-4 w-4 mr-2" /> Modifier
+</Button>
 
                                                             {/* Supprimer */}
                                                             <Button
@@ -809,22 +808,25 @@
                                         })}
 
                                         {/* ---- Modal d’édition ---- */}
-                                        {selectedDocument && (
-                                            <Modal open={true} onOpenChange={() => setSelectedDocument(null)}>
-                                                <ModalContent>
-                                                    <h2 className="text-xl font-semibold mb-4">Modifier le document</h2>
-                                                    <DocumentEditForm
-                                                        document={selectedDocument}
-                                                        onUpdated={() => {
-                                                            refetch();
-                                                            setSelectedDocument(null);
-                                                            toast({ title: 'Document mis à jour', description: 'Les informations du document ont été modifiées avec succès.' });
-                                                        }}
-                                                        onCancel={() => setSelectedDocument(null)}
-                                                    />
-                                                </ModalContent>
-                                            </Modal>
-                                        )}
+                                        {selectedDocumentToEdit && (
+    <Modal open={true} onOpenChange={() => setSelectedDocumentToEdit(null)}>
+        <ModalContent>
+            <h2 className="text-xl font-semibold mb-4">Modifier le document</h2>
+            <DocumentEditForm
+                document={selectedDocumentToEdit}
+                onUpdated={() => {
+                    refetch();
+                    setSelectedDocumentToEdit(null);
+                    toast({
+                        title: 'Document mis à jour',
+                        description: 'Les informations du document ont été modifiées avec succès.'
+                    });
+                }}
+                onCancel={() => setSelectedDocumentToEdit(null)}
+            />
+        </ModalContent>
+    </Modal>
+)}
 
                                         {/* Carte “+ Ajouter un document” */}
                                         <Card className="flex items-center justify-center p-4 border-dashed border-2 border-primary cursor-pointer hover:bg-primary/5">
@@ -850,12 +852,14 @@
                             />
                         </Card>
 
-                        {/* ---- Visionneuse de document ---- */}
-                        {/*<DocumentViewer*/}
-                        {/*    isOpen={!!selectedDocument}*/}
-                        {/*    onClose={() => setSelectedDocument(null)}*/}
-                        {/*    document={selectedDocument || null}*/}
-                        {/*/>*/}
+                       
+                {/* Viewer pour prévisualiser un document */}
+            <DocumentViewer
+    isOpen={!!selectedDocumentToView}
+    onClose={() => setSelectedDocumentToView(null)}
+    document={selectedDocumentToView || null}
+/>
+
 
 
                         {/* Messagerie */}

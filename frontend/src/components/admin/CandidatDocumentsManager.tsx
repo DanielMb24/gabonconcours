@@ -22,9 +22,9 @@ import {emailService} from '@/services/emailService';
 interface CandidatDocumentsManagerProps {
     candidatNupcan: string;
     candidatInfo: {
-        nom: string;
-        prenom: string;
-        email: string;
+        nomcan: string;
+        prncan: string;
+        maican: string;
     };
     onDocumentValidated?: () => void;
 }
@@ -94,10 +94,10 @@ const CandidatDocumentsManager: React.FC<CandidatDocumentsManagerProps> = ({
                 try {
                     await emailService.sendDocumentValidationNotification({
                         candidat: {
-                            nomcan: candidatInfo.nom,
-                            prncan: candidatInfo.prenom,
+                            nomcan: candidatInfo.nomcan,
+                            prncan: candidatInfo.prncan,
                             nupcan: candidatNupcan,
-                            maincan: candidatInfo.email
+                            maican: candidatInfo.maican
                         },
                         document: {
                             type: selectedDocument.type,
@@ -194,6 +194,20 @@ const CandidatDocumentsManager: React.FC<CandidatDocumentsManagerProps> = ({
         }
     };
 
+    const handleChangeStatus = async (document: any, newStatus: string) => {
+        try {
+            const docId = document.document_id || document.id; // <-- robust fallback
+            // exemple si vous utilisez fetch
+            await fetch(`/api/document-validation/${docId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ statut: newStatus, commentaire: document.commentaire || '', admin_id: 1 })
+            });
+            // rafraîchir la liste / état local
+        } catch (err) {
+            console.error('Erreur mise à jour statut document', err);
+        }
+    };
     if (loading) {
         return (
             <Card>

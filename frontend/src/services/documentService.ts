@@ -64,32 +64,52 @@ export const documentService = {
         }
     },
 
-    async replaceDocument(id: string, file: File): Promise<Document> {
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            const response = await api.put(`/dossiers/documents/${id}/replace`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+ 
 
-            const doc = response.data.data;
 
-            return {
-                id: doc.id.toString(),
-                nomdoc: doc.nomdoc,
-                type: doc.type,
-                document_statut: doc.statut || 'en_attente',
-                url: doc.nom_fichier,
-                taille: doc.taille || 0,
-            };
-        } catch (error: any) {
-            console.error('Erreur lors du remplacement du document :', error);
-            throw new Error(
-                error.response?.data?.message || 'Échec du remplacement du document'
-            );
-        }
-    },
+
+
+
+
+async replaceDocument(id: string, data: File | FormData): Promise<Document> {
+  try {
+    let formData: FormData;
+
+    // Si data est déjà un FormData (cas de ton formulaire)
+    if (data instanceof FormData) {
+      formData = data;
+    } else {
+      // Sinon, ancien comportement : on crée un FormData avec juste le fichier
+      formData = new FormData();
+      formData.append('file', data);
+    }
+
+    const response = await api.put(`/dossiers/documents/${id}/replace`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    const doc = response.data.data;
+
+    return {
+      id: doc.id?.toString() || id,
+      nomdoc: doc.nomdoc || '',
+      type: doc.type || '',
+      document_statut: doc.statut || 'en_attente',
+      url: doc.nom_fichier || doc.chemin_fichier || '',
+      taille: doc.taille || 0,
+    };
+  } catch (error: any) {
+    console.error('Erreur lors du remplacement du document :', error);
+    throw new Error(
+      error.response?.data?.message || 'Échec du remplacement du document'
+    );
+  }
+},
+
+
+
+
+
 
     async updateDocument(id: string, file: File): Promise<Document> {
         return this.replaceDocument(id, file);

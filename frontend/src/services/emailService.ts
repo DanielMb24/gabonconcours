@@ -41,7 +41,7 @@ class EmailService {
     // Envoyer une notification de validation de document
     async sendDocumentValidationNotification(data: {
         document: { type: string; nom: string };
-        candidat: { nomcan: string; prncan: string; nupcan: any; maincan: string };
+        candidat: { nomcan: string; prncan: string; nupcan: any; maican: string };
         commentaire: string;
         statut: "valide" | "rejete"
     }): Promise<{ success: boolean; message: string }> {

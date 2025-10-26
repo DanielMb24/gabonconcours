@@ -172,21 +172,22 @@ class Document {
         }
     }
 
-    // ... autres méthodes ...
+
 
     static async replace(id, newFileName) {
         const connection = getConnection();
         const doc = await this.findById(id);
         if (!doc) throw new Error('Document non trouvé');
 
-        // ✅ Remplacement pour documents rejetés ou en_attente
+        // Remplacement pour documents rejetés ou en_attente
         if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
             throw new Error('Seuls les documents rejetés ou en attente peuvent être remplacés');
         }
 
         await connection.execute(
             `UPDATE documents
-             SET nom_fichier = ?, 
+             SET nomdoc= ?, 
+             nom_fichier = ?, 
                  statut = 'en_attente', 
                  commentaire_validation = 'Document remplacé - en attente de validation', 
                  updated_at = NOW()
