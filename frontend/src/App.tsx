@@ -174,6 +174,22 @@ function App() {
                                     </React.Suspense>
                                 </SuperAdminRoute>
                             }/>
+
+                            <Route path="statistiques" element={
+                                <SuperAdminRoute>
+                                    <React.Suspense fallback={<div>Chargement...</div>}>
+                                        {React.createElement(require('@/pages/admin/SuperAdminStatistics').default)}
+                                    </React.Suspense>
+                                </SuperAdminRoute>
+                            }/>
+
+                            <Route path="support" element={
+                                <SuperAdminRoute>
+                                    <React.Suspense fallback={<div>Chargement...</div>}>
+                                        {React.createElement(require('@/pages/admin/SuperAdminSupport').default)}
+                                    </React.Suspense>
+                                </SuperAdminRoute>
+                            }/>
                         </Route>
 
                         <Route path="*" element={<NotFound/>}/>

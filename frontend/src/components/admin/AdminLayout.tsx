@@ -40,7 +40,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
                 { path: '/admin/concours-filieres', label: 'Concours x Filières', icon: Trophy },
                 { path: '/admin/filiere-matieres', label: 'Filières x Matières', icon: BookOpen },
                 { path: '/admin/logs', label: 'Journal d\'activité', icon: FileText },
-                { path: '/admin/messagerie', label: 'Support client', icon: Settings },
+                { path: '/admin/support', label: 'Support client', icon: UserCog },
                 { path: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
                 { path: '/admin/profile', label: 'Profil', icon: Settings }
             ];
