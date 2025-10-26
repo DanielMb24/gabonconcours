@@ -1,139 +1,136 @@
 const express = require('express');
 const router = express.Router();
-const AdminLog = require('../models/AdminLog');
 const { getConnection } = require('../config/database');
 
-// Récupérer tous les logs des admins établissements
+// Récupérer tous les logs d'actions admin
 router.get('/', async (req, res) => {
     try {
-        const { admin_id, table_name, startDate, endDate, limit = 100 } = req.query;
-        
         const connection = getConnection();
-        
+        const { admin_id, action_type, start_date, end_date } = req.query;
+
         let query = `
             SELECT 
                 al.*,
                 a.nom as admin_nom,
                 a.prenom as admin_prenom,
                 a.email as admin_email,
-                a.role as admin_role,
-                e.nometab as etablissement_nom
+                a.role as admin_role
             FROM admin_logs al
             LEFT JOIN administrateurs a ON al.admin_id = a.id
-            LEFT JOIN etablissements e ON a.etablissement_id = e.id
             WHERE 1=1
         `;
-        
         const params = [];
-        
+
         if (admin_id) {
             query += ' AND al.admin_id = ?';
             params.push(admin_id);
         }
-        
-        if (table_name) {
-            query += ' AND al.table_name = ?';
-            params.push(table_name);
+
+        if (action_type) {
+            query += ' AND al.action = ?';
+            params.push(action_type);
         }
-        
-        if (startDate) {
-            query += ' AND al.created_at >= ?';
-            params.push(startDate);
+
+        if (start_date) {
+            query += ' AND DATE(al.created_at) >= ?';
+            params.push(start_date);
         }
-        
-        if (endDate) {
-            query += ' AND al.created_at <= ?';
-            params.push(endDate);
+
+        if (end_date) {
+            query += ' AND DATE(al.created_at) <= ?';
+            params.push(end_date);
         }
-        
-        query += ' ORDER BY al.created_at DESC LIMIT ?';
-        params.push(parseInt(limit));
-        
+
+        query += ' ORDER BY al.created_at DESC LIMIT 1000';
+
         const [logs] = await connection.execute(query, params);
-        
+
         res.json({
             success: true,
-            data: logs,
-            total: logs.length
+            data: logs
         });
     } catch (error) {
-        console.error('Erreur récupération logs admin:', error);
+        console.error('Erreur récupération logs:', error);
         res.status(500).json({
             success: false,
-            message: 'Erreur serveur'
+            message: 'Erreur lors de la récupération des logs'
         });
     }
 });
 
-// Récupérer les statistiques des actions admin
+// Statistiques des actions admin
 router.get('/stats', async (req, res) => {
     try {
         const connection = getConnection();
-        
+
         const [stats] = await connection.execute(`
             SELECT 
                 COUNT(*) as total_actions,
-                COUNT(DISTINCT admin_id) as total_admins,
-                COUNT(DISTINCT DATE(created_at)) as jours_actifs,
-                action,
-                COUNT(*) as count
+                COUNT(DISTINCT admin_id) as admins_actifs,
+                COUNT(CASE WHEN action = 'validation_document' THEN 1 END) as validations,
+                COUNT(CASE WHEN action = 'rejet_document' THEN 1 END) as rejets,
+                COUNT(CASE WHEN action = 'envoi_message' THEN 1 END) as messages_envoyes,
+                COUNT(CASE WHEN action = 'attribution_note' THEN 1 END) as notes_attribuees,
+                COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as actions_aujourd_hui
             FROM admin_logs
-            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            GROUP BY action
         `);
-        
-        const [recentActions] = await connection.execute(`
-            SELECT 
-                al.*,
-                a.nom as admin_nom,
-                a.prenom as admin_prenom
-            FROM admin_logs al
-            LEFT JOIN administrateurs a ON al.admin_id = a.id
-            ORDER BY al.created_at DESC
-            LIMIT 10
-        `);
-        
+
         res.json({
             success: true,
-            data: {
-                stats,
-                recentActions
-            }
+            data: stats[0]
         });
     } catch (error) {
         console.error('Erreur stats logs:', error);
         res.status(500).json({
             success: false,
-            message: 'Erreur serveur'
+            message: 'Erreur lors du calcul des statistiques'
         });
     }
 });
 
-// Logger une nouvelle action
+// Créer un nouveau log
 router.post('/', async (req, res) => {
     try {
-        const logData = {
-            admin_id: req.body.admin_id,
-            action: req.body.action,
-            table_name: req.body.table_name,
-            record_id: req.body.record_id,
-            old_values: req.body.old_values || {},
-            new_values: req.body.new_values || {},
-            ip_address: req.ip,
-            user_agent: req.headers['user-agent']
-        };
-        
-        const log = await AdminLog.create(logData);
-        
+        const connection = getConnection();
+        const {
+            admin_id,
+            action,
+            table_name,
+            record_id,
+            old_values,
+            new_values,
+            ip_address,
+            user_agent
+        } = req.body;
+
+        const [result] = await connection.execute(
+            `INSERT INTO admin_logs 
+            (admin_id, action, table_name, record_id, old_values, new_values, ip_address, user_agent, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [
+                admin_id,
+                action,
+                table_name || null,
+                record_id || null,
+                JSON.stringify(old_values || {}),
+                JSON.stringify(new_values || {}),
+                ip_address || null,
+                user_agent || null
+            ]
+        );
+
         res.json({
             success: true,
-            data: log
+            message: 'Log créé avec succès',
+            data: {
+                id: result.insertId
+            }
         });
     } catch (error) {
         console.error('Erreur création log:', error);
         res.status(500).json({
             success: false,
-            message: 'Erreur serveur'
+            message: 'Erreur lors de la création du log'
         });
     }
 });

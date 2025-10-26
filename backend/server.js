@@ -105,6 +105,7 @@ const concoursFilieresExtendedRoutes = require('./routes/concours-filieres-exten
 const filiereMatieresExtendedRoutes = require('./routes/filiere-matieres-extended');
 const supportExtendedRoutes = require('./routes/support-extended');
 const superAdminActionsRoutes = require('./routes/super-admin-actions');
+const adminLogsRoutes = require('./routes/admin-logs');
 
 // API Routes
 app.use('/api/concours', concoursRoutes);
@@ -157,6 +158,7 @@ app.use('/api/concours-filieres', concoursFilieresExtendedRoutes); // Routes ét
 app.use('/api/filiere-matieres', filiereMatieresExtendedRoutes); // Routes étendues filières-matières
 app.use('/api/support', supportExtendedRoutes); // Support étendu
 app.use('/api/super-admin', superAdminActionsRoutes); // Actions super admin
+app.use('/api/admin-logs', adminLogsRoutes); // Logs d'actions admin
 const {router: adminAuthRouter} = require('./routes/adminAuth');
 app.use('/api/admin/auth', adminAuthRouter);
 app.use('/api/admin/management', require('./routes/adminManagement'));

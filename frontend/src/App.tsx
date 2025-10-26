@@ -166,6 +166,14 @@ function App() {
                                     <FiliereMatieresManagement/>
                                 </SuperAdminRoute>
                             }/>
+
+                            <Route path="logs" element={
+                                <SuperAdminRoute>
+                                    <React.Suspense fallback={<div>Chargement...</div>}>
+                                        {React.createElement(require('@/pages/admin/AdminLogsView').default)}
+                                    </React.Suspense>
+                                </SuperAdminRoute>
+                            }/>
                         </Route>
 
                         <Route path="*" element={<NotFound/>}/>
