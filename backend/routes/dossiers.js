@@ -7,6 +7,7 @@ const Document = require('../models/Document');
 const Dossier = require('../models/Dossier');
 const Candidat = require('../models/Candidat');
 const {unlinkSync, existsSync, renameSync} = require("node:fs");
+const { type } = require('node:os');
 
 // Configuration multer pour l'upload de documents
 const storage = multer.diskStorage({
@@ -421,7 +422,7 @@ router.put('/documents/:id/replace', upload.single('file'), async (req, res) => 
         await connection.execute(
             `
             UPDATE documents
-            SET nomdoc = ?, nom_fichier = ?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
+            SET nomdoc = ?, nom_fichier = ?, type=?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
             WHERE id = ?
             `,
             [nomdoc || doc.nomdoc, newFileName, newFilePath, id]
@@ -432,8 +433,11 @@ router.put('/documents/:id/replace', upload.single('file'), async (req, res) => 
             message: 'Document remplacé avec succès.',
             data: {
                 id,
-                nomdoc: nomdoc || doc.nomdoc,
+                
+                nomdoc: nomdoc || doc.nomdoc, 
+                  type: doc.type,
                 nom_fichier: newFileName,
+             
                 chemin_fichier: newFilePath,
                 statut: 'en_attente'
             }

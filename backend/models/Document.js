@@ -187,6 +187,7 @@ class Document {
         await connection.execute(
             `UPDATE documents
              SET nomdoc= ?, 
+             type =?,
              nom_fichier = ?, 
                  statut = 'en_attente', 
                  commentaire_validation = 'Document remplacé - en attente de validation', 

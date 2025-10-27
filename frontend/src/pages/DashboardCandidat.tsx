@@ -57,8 +57,8 @@
             const [isDownloading, setIsDownloading] = useState(false);
             const [isSendingEmail, setIsSendingEmail] = useState(false);
             const [isDownloadingPNG, setIsDownloadingPNG] = useState(false);
-           const [selectedDocumentToView, setSelectedDocumentToView] = useState<any | null>(null);
-const [selectedDocumentToEdit, setSelectedDocumentToEdit] = useState<any | null>(null);
+            const [selectedDocumentToView, setSelectedDocumentToView] = useState<any | null>(null);
+            const [selectedDocumentToEdit, setSelectedDocumentToEdit] = useState<any | null>(null);
 
             const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'notes'>('overview');
             const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
@@ -73,7 +73,7 @@ const [selectedDocumentToEdit, setSelectedDocumentToEdit] = useState<any | null>
                 queryKey: ['candidature-complete', nupcan],
                 queryFn: () => candidatureService.getCandidatureByNupcan(nupcan!),
                 enabled: !!nupcan,
-                refetchInterval: 10000,
+                refetchInterval: 20000,
             });
 
             const handleContinuerVersDocuments = () => {
