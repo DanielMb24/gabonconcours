@@ -38,9 +38,9 @@ const FiliereMatieresManagement = () => {
 
     const loadFilieres = async () => {
         try {
-            const response = await apiService.getFilieres();
-            if (response.success) {
-                setFilieres(response.data || []);
+            const response = await apiService.getFilieres<any[]>();
+            if (response.success && response.data) {
+                setFilieres(response.data);
             }
         } catch (error) {
             console.error('Erreur chargement filières:', error);
@@ -49,9 +49,9 @@ const FiliereMatieresManagement = () => {
 
     const loadMatieres = async () => {
         try {
-            const response = await apiService.makeRequest('/matieres', 'GET');
-            if (response.success) {
-                setMatieres(response.data || []);
+            const response = await apiService.makeRequest<any[]>('/matieres', 'GET');
+            if (response.success && response.data) {
+                setMatieres(response.data);
             }
         } catch (error) {
             console.error('Erreur chargement matières:', error);
@@ -60,9 +60,9 @@ const FiliereMatieresManagement = () => {
 
     const loadFiliereMatieresExistantes = async (filiereId: string) => {
         try {
-            const response = await apiService.makeRequest(`/filiere-matieres/filiere/${filiereId}`, 'GET');
-            if (response.success) {
-                setFiliereMatieresExistantes(response.data || []);
+            const response = await apiService.makeRequest<any[]>(`/filiere-matieres/filiere/${filiereId}`, 'GET');
+            if (response.success && response.data) {
+                setFiliereMatieresExistantes(response.data);
                 
                 // Pré-sélectionner les matières existantes
                 const existingMatiereIds = new Set(response.data.map((fm: any) => fm.matiere_id));

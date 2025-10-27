@@ -256,6 +256,87 @@ router.post('/', (req, res) => {
 });
 
 
+// POST /api/dossiers/add-document - Ajouter un document supplémentaire
+router.post('/add-document', upload.single('file'), async (req, res) => {
+    try {
+        const { nomdoc, type, nupcan } = req.body;
+        
+        if (!nomdoc || !nupcan || !req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Données manquantes (nomdoc, nupcan, file)'
+            });
+        }
+
+        // Récupérer le candidat
+        const candidat = await Candidat.findByNupcan(nupcan);
+        if (!candidat) {
+            return res.status(404).json({
+                success: false,
+                message: 'Candidat non trouvé'
+            });
+        }
+
+        // Vérifier le nombre de documents supplémentaires existants
+        const connection = require('../config/database').getConnection();
+        const [existingDocs] = await connection.execute(
+            `SELECT COUNT(*) as count FROM documents d 
+             INNER JOIN dossiers dos ON d.id = dos.document_id 
+             WHERE dos.nipcan = ? AND d.type = 'autre'`,
+            [nupcan]
+        );
+
+        if (existingDocs[0].count >= 3) {
+            // Supprimer le fichier uploadé
+            if (existsSync(req.file.path)) {
+                unlinkSync(req.file.path);
+            }
+            return res.status(400).json({
+                success: false,
+                message: 'Vous avez atteint la limite de 3 documents supplémentaires'
+            });
+        }
+
+        // Créer le document
+        const documentData = {
+            nomdoc: nomdoc,
+            type: type || 'autre',
+            nom_fichier: req.file.filename,
+            statut: 'en_attente'
+        };
+
+        const document = await Document.create(documentData);
+
+        // Créer le dossier qui lie le document au candidat
+        const dossierData = {
+            candidat_id: candidat.id,
+            concours_id: candidat.concours_id,
+            document_id: document.id,
+            nipcan: nupcan,
+            docdsr: req.file.path
+        };
+
+        const dossier = await Dossier.create(dossierData);
+
+        res.status(201).json({
+            success: true,
+            data: { document, dossier },
+            message: 'Document ajouté avec succès'
+        });
+    } catch (error) {
+        console.error('Erreur ajout document:', error);
+        // Nettoyer le fichier en cas d'erreur
+        if (req.file && existsSync(req.file.path)) {
+            unlinkSync(req.file.path);
+        }
+        res.status(500).json({
+            success: false,
+            message: 'Erreur serveur',
+            errors: [error.message]
+        });
+    }
+});
+
 // PUT /api/dossiers/:id - Mettre à jour un dossier
 router.put('/:id', upload.single('docdsr'), async (req, res) => {
     try {

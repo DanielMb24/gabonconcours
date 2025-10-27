@@ -184,11 +184,10 @@ class Document {
             throw new Error('Seuls les documents rejetés ou en attente peuvent être remplacés');
         }
 
+        // Conserver le nomdoc et le type existants, seul le fichier change
         await connection.execute(
             `UPDATE documents
-             SET nomdoc= ?, 
-             type =?,
-             nom_fichier = ?, 
+             SET nom_fichier = ?, 
                  statut = 'en_attente', 
                  commentaire_validation = 'Document remplacé - en attente de validation', 
                  updated_at = NOW()

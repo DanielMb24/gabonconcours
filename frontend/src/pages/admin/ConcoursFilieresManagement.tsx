@@ -45,9 +45,9 @@ const ConcoursFilieresManagement = () => {
 
     const loadEtablissements = async () => {
         try {
-            const response = await apiService.makeRequest('/etablissements', 'GET');
-            if (response.success) {
-                setEtablissements(response.data || []);
+            const response = await apiService.makeRequest<any[]>('/etablissements', 'GET');
+            if (response.success && response.data) {
+                setEtablissements(response.data);
             }
         } catch (error) {
             console.error('Erreur chargement établissements:', error);
@@ -56,9 +56,9 @@ const ConcoursFilieresManagement = () => {
 
     const loadFilieres = async () => {
         try {
-            const response = await apiService.makeRequest('/filieres', 'GET');
-            if (response.success) {
-                setFilieres(response.data || []);
+            const response = await apiService.makeRequest<any[]>('/filieres', 'GET');
+            if (response.success && response.data) {
+                setFilieres(response.data);
             }
         } catch (error) {
             console.error('Erreur chargement filières:', error);
@@ -67,9 +67,9 @@ const ConcoursFilieresManagement = () => {
 
     const loadConcoursByEtablissement = async (etablissementId: string) => {
         try {
-            const response = await apiService.makeRequest(`/concours?etablissement_id=${etablissementId}`, 'GET');
-            if (response.success) {
-                setConcours(response.data || []);
+            const response = await apiService.makeRequest<any[]>(`/concours?etablissement_id=${etablissementId}`, 'GET');
+            if (response.success && response.data) {
+                setConcours(response.data);
             }
         } catch (error) {
             console.error('Erreur chargement concours:', error);
@@ -78,9 +78,9 @@ const ConcoursFilieresManagement = () => {
 
     const loadConcoursFilieresExistantes = async (concoursId: string) => {
         try {
-            const response = await apiService.makeRequest(`/concours-filieres/concours/${concoursId}`, 'GET');
-            if (response.success) {
-                setConcoursFilieresExistantes(response.data || []);
+            const response = await apiService.makeRequest<any[]>(`/concours-filieres/concours/${concoursId}`, 'GET');
+            if (response.success && response.data) {
+                setConcoursFilieresExistantes(response.data);
                 
                 // Pré-sélectionner les filières existantes
                 const existingFiliereIds = new Set(response.data.map((cf: any) => cf.filiere_id));

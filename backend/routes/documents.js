@@ -173,6 +173,40 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
 });
 
 /* =====================================================
+   📥 TÉLÉCHARGEMENT DE DOCUMENT
+===================================================== */
+
+router.get('/:id/download', async (req, res) => {
+    try {
+        const doc = await Document.findById(req.params.id);
+        if (!doc) {
+            return res.status(404).json({ success: false, message: 'Document introuvable' });
+        }
+
+        const filePath = path.join(uploadDir, doc.nom_fichier);
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ success: false, message: 'Fichier non trouvé sur le serveur' });
+        }
+
+        // Définir le type MIME approprié
+        const ext = path.extname(doc.nom_fichier).toLowerCase();
+        let contentType = 'application/octet-stream';
+        if (ext === '.pdf') contentType = 'application/pdf';
+        else if (['.jpg', '.jpeg'].includes(ext)) contentType = 'image/jpeg';
+        else if (ext === '.png') contentType = 'image/png';
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `inline; filename="${doc.nomdoc || doc.nom_fichier}"`);
+        
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+    } catch (error) {
+        console.error('Erreur téléchargement document:', error);
+        res.status(500).json({ success: false, message: 'Erreur lors du téléchargement' });
+    }
+});
+
+/* =====================================================
    ❌ SUPPRESSION
 ===================================================== */
 
