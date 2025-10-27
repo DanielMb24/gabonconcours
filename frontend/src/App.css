@@ -42,3 +42,7 @@
 .read-the-docs {
     color: #888;
 }
+/* Correction globale pour les Select Radix UI dans les Dialogs */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}

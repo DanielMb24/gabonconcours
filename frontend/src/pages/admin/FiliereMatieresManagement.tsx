@@ -39,7 +39,7 @@ const FiliereMatieresManagement = () => {
    const loadFilieres = async () => {
   try {
     const response = await apiService.makeRequest<any[]>('/filieres', 'GET');
-    const data = response.data || response; // <-- important
+    const data = response.data || response; 
     if (data && Array.isArray(data)) {
       setFilieres(data);
     }

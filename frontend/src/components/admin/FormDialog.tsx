@@ -53,22 +53,32 @@ const FormDialog: React.FC<FormDialogProps> = ({
                         placeholder={field.placeholder}
                     />
                 );
+case 'select':
+    return (
+        <Select
+            value={value}
+            onValueChange={(val) => handleFieldChange(field.name, val)}
+        >
+            <SelectTrigger>
+                <SelectValue placeholder={field.placeholder || "Sélectionner..."} />
+            </SelectTrigger>
+          
+            <SelectContent
+                className="z-[9999]"
+                position="popper"
+                side="bottom"
+                sideOffset={4}
+            >
+                {field.options?.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
+    );
 
-            case 'select':
-                return (
-                    <Select value={value} onValueChange={(val) => handleFieldChange(field.name, val)}>
-                        <SelectTrigger>
-                            <SelectValue placeholder={field.placeholder || "Sélectionner..."}/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            {field.options?.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                );
+
 
             default:
                 return (

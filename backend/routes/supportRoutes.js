@@ -4,32 +4,35 @@ const {getConnection} = require('../config/database');
 
 router.get('/', async (req, res) => {
     try {
-        const {page = 1, limit = 5, search = '', status = 'all'} = req.query;
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 5;
+        const search = req.query.search || '';
+        const status = req.query.status || 'all';
         const offset = (page - 1) * limit;
 
         let query = 'SELECT * FROM support_requests WHERE 1=1';
         const params = [];
 
-        // Add search condition
+        // Recherche
         if (search) {
             query += ' AND (name LIKE ? OR email LIKE ? OR message LIKE ?)';
             params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
 
-        // Add status condition
+        // Filtrage par statut
         if (status !== 'all') {
             query += ' AND status = ?';
             params.push(status);
         }
 
-        // Add pagination
+        // Pagination
         query += ' ORDER BY createdAt DESC LIMIT ? OFFSET ?';
-        params.push(parseInt(limit), parseInt(offset));
+        params.push(limit, offset); // ✅ valeurs déjà converties en entiers
 
         const connection = getConnection();
         const [rows] = await connection.execute(query, params);
 
-        // Count total records for pagination
+        // Total
         let countQuery = 'SELECT COUNT(*) as count FROM support_requests WHERE 1=1';
         const countParams = [];
 
@@ -46,12 +49,13 @@ router.get('/', async (req, res) => {
         const [total] = await connection.execute(countQuery, countParams);
         const totalPages = Math.ceil(total[0].count / limit);
 
-        res.status(200).json({data: {requests: rows, totalPages}});
+        res.status(200).json({ data: { requests: rows, totalPages } });
     } catch (error) {
         console.error('Error fetching support requests:', error);
-        res.status(500).json({error: 'Internal server error'});
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 router.post('/', async (req, res) => {
     try {

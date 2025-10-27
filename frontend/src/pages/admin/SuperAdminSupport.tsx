@@ -28,9 +28,10 @@ const SuperAdminSupport = () => {
   const loadMessages = async () => {
     try {
       const response = await apiService.makeRequest('/support', 'GET');
-      if (response.success) {
-        setMessages(response.data || []);
-      }
+   const data = response.data || response; 
+      if (data && Array.isArray(data)) {
+      setMessages(data);
+    }
     } catch (error) {
       console.error('Erreur chargement messages:', error);
     } finally {
@@ -55,7 +56,7 @@ const SuperAdminSupport = () => {
         'POST',
         {
           reponse: reponse,
-          admin_id: 1 // À remplacer par l'ID de l'admin connecté
+          admin_id: 43 // À remplacer par l'ID de l'admin connecté
         }
       );
 
