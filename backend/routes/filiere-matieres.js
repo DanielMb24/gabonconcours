@@ -2,167 +2,103 @@ const express = require('express');
 const router = express.Router();
 const { getConnection } = require('../config/database');
 
-// Lier une filière à une matière
-router.post('/', async (req, res) => {
+// GET /api/filiere-matieres/filiere/:filiereId - Récupérer les matières d'une filière
+router.get('/filiere/:filiereId', async (req, res) => {
     try {
-        const { filiere_id, matiere_id, coefficient, obligatoire } = req.body;
+        const { filiereId } = req.params;
+        const connection = getConnection();
         
-        if (!filiere_id || !matiere_id) {
+        const [rows] = await connection.execute(`
+            SELECT fm.*, m.nommat as nom_matiere, m.description
+            FROM filiere_matieres fm
+            LEFT JOIN matieres m ON fm.matiere_id = m.id
+            WHERE fm.filiere_id = ?
+            ORDER BY m.nommat
+        `, [filiereId]);
+        
+        res.json({
+            success: true,
+            data: rows
+        });
+    } catch (error) {
+        console.error('Erreur récupération matières de la filière:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des matières',
+            error: error.message
+        });
+    }
+});
+
+// POST /api/filiere-matieres/filiere/:filiereId/bulk - Ajouter plusieurs matières à une filière
+router.post('/filiere/:filiereId/bulk', async (req, res) => {
+    try {
+        const { filiereId } = req.params;
+        const { matieres } = req.body;
+        
+        if (!Array.isArray(matieres) || matieres.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: 'filiere_id et matiere_id requis'
+                message: 'Liste de matières invalide'
             });
         }
         
         const connection = getConnection();
         
-        const [result] = await connection.execute(
-            `INSERT INTO filiere_matieres (filiere_id, matiere_id, coefficient, obligatoire)
-             VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE coefficient = ?, obligatoire = ?`,
-            [
-                filiere_id, 
-                matiere_id, 
-                coefficient || 1.0, 
-                obligatoire !== undefined ? obligatoire : true,
-                coefficient || 1.0,
-                obligatoire !== undefined ? obligatoire : true
-            ]
+        // Supprimer les anciennes associations
+        await connection.execute(
+            'DELETE FROM filiere_matieres WHERE filiere_id = ?',
+            [filiereId]
         );
+        
+        // Ajouter les nouvelles associations
+        for (const matiere of matieres) {
+            await connection.execute(`
+                INSERT INTO filiere_matieres (filiere_id, matiere_id, coefficient, obligatoire, created_at, updated_at)
+                VALUES (?, ?, ?, ?, NOW(), NOW())
+            `, [
+                filiereId, 
+                matiere.matiere_id, 
+                matiere.coefficient || 1.0, 
+                matiere.obligatoire ? 1 : 0
+            ]);
+        }
         
         res.json({
             success: true,
-            message: 'Liaison créée avec succès',
-            data: { id: result.insertId }
+            message: `${matieres.length} matière(s) associée(s) à la filière`
         });
     } catch (error) {
-        console.error('Erreur création liaison:', error);
+        console.error('Erreur ajout matières à la filière:', error);
         res.status(500).json({
             success: false,
-            message: error.message
+            message: 'Erreur lors de l\'ajout des matières',
+            error: error.message
         });
     }
 });
 
-// Récupérer toutes les matières d'une filière
-router.get('/filiere/:filiereId', async (req, res) => {
-    try {
-        const connection = getConnection();
-        
-        const [rows] = await connection.execute(
-            `SELECT fm.*, m.nom_matiere, m.description as matiere_description
-             FROM filiere_matieres fm
-             JOIN matieres m ON fm.matiere_id = m.id
-             WHERE fm.filiere_id = ?
-             ORDER BY fm.obligatoire DESC, m.nom_matiere`,
-            [req.params.filiereId]
-        );
-        
-        res.json({
-            success: true,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Erreur récupération matières:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// Récupérer toutes les filières d'une matière
-router.get('/matiere/:matiereId', async (req, res) => {
-    try {
-        const connection = getConnection();
-        
-        const [rows] = await connection.execute(
-            `SELECT fm.*, f.nomfil, f.description as filiere_description
-             FROM filiere_matieres fm
-             JOIN filieres f ON fm.filiere_id = f.id
-             WHERE fm.matiere_id = ?
-             ORDER BY f.nomfil`,
-            [req.params.matiereId]
-        );
-        
-        res.json({
-            success: true,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Erreur récupération filières:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// Supprimer une liaison
+// DELETE /api/filiere-matieres/:id - Supprimer une association filière-matière
 router.delete('/:id', async (req, res) => {
     try {
+        const { id } = req.params;
         const connection = getConnection();
         
         await connection.execute(
             'DELETE FROM filiere_matieres WHERE id = ?',
-            [req.params.id]
+            [id]
         );
         
         res.json({
             success: true,
-            message: 'Liaison supprimée avec succès'
+            message: 'Association supprimée avec succès'
         });
     } catch (error) {
-        console.error('Erreur suppression liaison:', error);
+        console.error('Erreur suppression association:', error);
         res.status(500).json({
             success: false,
-            message: error.message
-        });
-    }
-});
-
-// Mettre à jour une liaison
-router.put('/:id', async (req, res) => {
-    try {
-        const { coefficient, obligatoire } = req.body;
-        const connection = getConnection();
-        
-        const updates = [];
-        const params = [];
-        
-        if (coefficient !== undefined) {
-            updates.push('coefficient = ?');
-            params.push(coefficient);
-        }
-        
-        if (obligatoire !== undefined) {
-            updates.push('obligatoire = ?');
-            params.push(obligatoire);
-        }
-        
-        if (updates.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Aucune donnée à mettre à jour'
-            });
-        }
-        
-        params.push(req.params.id);
-        
-        await connection.execute(
-            `UPDATE filiere_matieres SET ${updates.join(', ')} WHERE id = ?`,
-            params
-        );
-        
-        res.json({
-            success: true,
-            message: 'Mise à jour effectuée avec succès'
-        });
-    } catch (error) {
-        console.error('Erreur mise à jour:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
+            message: 'Erreur lors de la suppression',
+            error: error.message
         });
     }
 });

@@ -2,138 +2,99 @@ const express = require('express');
 const router = express.Router();
 const { getConnection } = require('../config/database');
 
-// Lier un concours à une filière
-router.post('/', async (req, res) => {
+// GET /api/concours-filieres/concours/:concoursId - Récupérer les filières d'un concours
+router.get('/concours/:concoursId', async (req, res) => {
     try {
-        const { concours_id, filiere_id, places_disponibles } = req.body;
+        const { concoursId } = req.params;
+        const connection = getConnection();
         
-        if (!concours_id || !filiere_id) {
+        const [rows] = await connection.execute(`
+            SELECT cf.*, f.nomfil, n.nomniv as niveau_nomniv
+            FROM concours_filieres cf
+            LEFT JOIN filieres f ON cf.filiere_id = f.id
+            LEFT JOIN niveaux n ON f.niveau_id = n.id
+            WHERE cf.concours_id = ?
+            ORDER BY f.nomfil
+        `, [concoursId]);
+        
+        res.json({
+            success: true,
+            data: rows
+        });
+    } catch (error) {
+        console.error('Erreur récupération filières du concours:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des filières',
+            error: error.message
+        });
+    }
+});
+
+// POST /api/concours-filieres/concours/:concoursId/bulk - Ajouter plusieurs filières à un concours
+router.post('/concours/:concoursId/bulk', async (req, res) => {
+    try {
+        const { concoursId } = req.params;
+        const { filieres } = req.body;
+        
+        if (!Array.isArray(filieres) || filieres.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: 'concours_id et filiere_id requis'
+                message: 'Liste de filières invalide'
             });
         }
         
         const connection = getConnection();
         
-        const [result] = await connection.execute(
-            `INSERT INTO concours_filieres (concours_id, filiere_id, places_disponibles)
-             VALUES (?, ?, ?)
-             ON DUPLICATE KEY UPDATE places_disponibles = ?`,
-            [concours_id, filiere_id, places_disponibles || 0, places_disponibles || 0]
+        // Supprimer les anciennes associations
+        await connection.execute(
+            'DELETE FROM concours_filieres WHERE concours_id = ?',
+            [concoursId]
         );
+        
+        // Ajouter les nouvelles associations
+        for (const filiere of filieres) {
+            await connection.execute(`
+                INSERT INTO concours_filieres (concours_id, filiere_id, places_disponibles, created_at, updated_at)
+                VALUES (?, ?, ?, NOW(), NOW())
+            `, [concoursId, filiere.filiere_id, filiere.places_disponibles || 0]);
+        }
         
         res.json({
             success: true,
-            message: 'Liaison créée avec succès',
-            data: { id: result.insertId }
+            message: `${filieres.length} filière(s) associée(s) au concours`
         });
     } catch (error) {
-        console.error('Erreur création liaison:', error);
+        console.error('Erreur ajout filières au concours:', error);
         res.status(500).json({
             success: false,
-            message: error.message
+            message: 'Erreur lors de l\'ajout des filières',
+            error: error.message
         });
     }
 });
 
-// Récupérer toutes les filières d'un concours
-router.get('/concours/:concoursId', async (req, res) => {
-    try {
-        const connection = getConnection();
-        
-        const [rows] = await connection.execute(
-            `SELECT cf.*, f.nomfil, f.description as filiere_description
-             FROM concours_filieres cf
-             JOIN filieres f ON cf.filiere_id = f.id
-             WHERE cf.concours_id = ?
-             ORDER BY f.nomfil`,
-            [req.params.concoursId]
-        );
-        
-        res.json({
-            success: true,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Erreur récupération filières:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// Récupérer tous les concours d'une filière
-router.get('/filiere/:filiereId', async (req, res) => {
-    try {
-        const connection = getConnection();
-        
-        const [rows] = await connection.execute(
-            `SELECT cf.*, c.libcnc, c.datcnc
-             FROM concours_filieres cf
-             JOIN concours c ON cf.concours_id = c.id
-             WHERE cf.filiere_id = ?
-             ORDER BY c.datcnc DESC`,
-            [req.params.filiereId]
-        );
-        
-        res.json({
-            success: true,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Erreur récupération concours:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// Supprimer une liaison
+// DELETE /api/concours-filieres/:id - Supprimer une association concours-filière
 router.delete('/:id', async (req, res) => {
     try {
+        const { id } = req.params;
         const connection = getConnection();
         
         await connection.execute(
             'DELETE FROM concours_filieres WHERE id = ?',
-            [req.params.id]
+            [id]
         );
         
         res.json({
             success: true,
-            message: 'Liaison supprimée avec succès'
+            message: 'Association supprimée avec succès'
         });
     } catch (error) {
-        console.error('Erreur suppression liaison:', error);
+        console.error('Erreur suppression association:', error);
         res.status(500).json({
             success: false,
-            message: error.message
-        });
-    }
-});
-
-// Mettre à jour le nombre de places
-router.put('/:id', async (req, res) => {
-    try {
-        const { places_disponibles } = req.body;
-        const connection = getConnection();
-        
-        await connection.execute(
-            'UPDATE concours_filieres SET places_disponibles = ? WHERE id = ?',
-            [places_disponibles, req.params.id]
-        );
-        
-        res.json({
-            success: true,
-            message: 'Mise à jour effectuée avec succès'
-        });
-    } catch (error) {
-        console.error('Erreur mise à jour:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
+            message: 'Erreur lors de la suppression',
+            error: error.message
         });
     }
 });

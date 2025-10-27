@@ -84,10 +84,12 @@ async replaceDocument(id: string, data: File | FormData): Promise<Document> {
       formData.append('file', data);
     }
 
-    const response = await api.put(`/dossiers/documents/${id}/replace`, formData, {
+    console.log('Remplacement document ID:', id);
+    const response = await api.put(`/documents/${id}/replace`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
+    console.log('Réponse remplacement:', response.data);
     const doc = response.data.data;
 
     return {

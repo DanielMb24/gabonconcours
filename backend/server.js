@@ -106,6 +106,8 @@ const filiereMatieresExtendedRoutes = require('./routes/filiere-matieres-extende
 const supportExtendedRoutes = require('./routes/support-extended');
 const superAdminActionsRoutes = require('./routes/super-admin-actions');
 const adminLogsRoutes = require('./routes/admin-logs');
+const serveFilesRoutes = require('./routes/serve-files');
+const messagingRoutes = require('./routes/messaging');
 
 // API Routes
 app.use('/api/concours', concoursRoutes);
@@ -159,6 +161,8 @@ app.use('/api/filiere-matieres', filiereMatieresExtendedRoutes); // Routes éten
 app.use('/api/support', supportExtendedRoutes); // Support étendu
 app.use('/api/super-admin', superAdminActionsRoutes); // Actions super admin
 app.use('/api/admin-logs', adminLogsRoutes); // Logs d'actions admin
+app.use('/', serveFilesRoutes); // Servir les fichiers uploadés
+app.use('/api/messaging', messagingRoutes); // Messagerie admin-candidat
 const {router: adminAuthRouter} = require('./routes/adminAuth');
 app.use('/api/admin/auth', adminAuthRouter);
 app.use('/api/admin/management', require('./routes/adminManagement'));
