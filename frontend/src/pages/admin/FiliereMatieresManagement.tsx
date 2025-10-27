@@ -36,16 +36,18 @@ const FiliereMatieresManagement = () => {
         }
     }, [selectedFiliere]);
 
-    const loadFilieres = async () => {
-        try {
-            const response = await apiService.getFilieres<any[]>();
-            if (response.success && response.data) {
-                setFilieres(response.data);
-            }
-        } catch (error) {
-            console.error('Erreur chargement filières:', error);
-        }
-    };
+   const loadFilieres = async () => {
+  try {
+    const response = await apiService.makeRequest<any[]>('/filieres', 'GET');
+    const data = response.data || response; // <-- important
+    if (data && Array.isArray(data)) {
+      setFilieres(data);
+    }
+  } catch (error) {
+    console.error('Erreur chargement filières:', error);
+  }
+};
+
 
     const loadMatieres = async () => {
         try {

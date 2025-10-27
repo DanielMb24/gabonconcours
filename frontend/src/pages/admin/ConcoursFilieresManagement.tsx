@@ -46,24 +46,27 @@ const ConcoursFilieresManagement = () => {
     const loadEtablissements = async () => {
         try {
             const response = await apiService.makeRequest<any[]>('/etablissements', 'GET');
-            if (response.success && response.data) {
-                setEtablissements(response.data);
+            const data = response.data || response; // <-- important
+            if (data && Array.isArray(data)) {
+                setEtablissements(data);
             }
         } catch (error) {
             console.error('Erreur chargement établissements:', error);
         }
     };
 
-    const loadFilieres = async () => {
-        try {
-            const response = await apiService.makeRequest<any[]>('/filieres', 'GET');
-            if (response.success && response.data) {
-                setFilieres(response.data);
-            }
-        } catch (error) {
-            console.error('Erreur chargement filières:', error);
-        }
-    };
+   const loadFilieres = async () => {
+  try {
+    const response = await apiService.makeRequest<any[]>('/filieres', 'GET');
+    const data = response.data || response; // <-- important
+    if (data && Array.isArray(data)) {
+      setFilieres(data);
+    }
+  } catch (error) {
+    console.error('Erreur chargement filières:', error);
+  }
+};
+
 
     const loadConcoursByEtablissement = async (etablissementId: string) => {
         try {
