@@ -21,7 +21,7 @@ router.post('/requests', async (req, res) => {
                 `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Demande de support enregistrée</h2>
-                    <p>Bonjour ${requestData.nom},</p>
+                    <p>Bonjour ${requestData.name},</p>
                     <p>Votre demande de support a été enregistrée avec succès.</p>
                     <p><strong>Numéro de ticket:</strong> #${request.id}</p>
                     <p><strong>Sujet:</strong> ${requestData.sujet}</p>

@@ -38,24 +38,41 @@ const SuperAdminStatistics = () => {
   }, [timeRange]);
 
   const loadStatistics = async () => {
-    try {
-      const [globalStats, documentStats, candidatsStats] = await Promise.all([
-        apiService.makeRequest('/statistics/global', 'GET'),
-        apiService.makeRequest('/statistics/documents', 'GET'),
-        apiService.makeRequest('/statistics/candidats', 'GET')
-      ]);
+  try {
+    const [globalStats, documentStats, candidatsStats] = await Promise.all([
+      apiService.makeRequest('/stats/global', 'GET'),
+      apiService.makeRequest('/statistics/documents', 'GET'),
+      apiService.makeRequest('/statistics/candidats', 'GET')
+    ]);
 
-      setStats({
-        global: globalStats.data || {},
-        documents: documentStats.data || {},
-        candidats: candidatsStats.data || {}
-      });
-    } catch (error) {
-      console.error('Erreur chargement statistiques:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 🧩 Normalisation des structures (pour éviter les 0 non justifiés)
+    const normalize = (data: any) => data?.data ?? data ?? {};
+
+    const normalizeDocuments = (data: any) => ({
+      valides: data.valides ?? data.valid ?? 0,
+      en_attente: data.en_attente ?? data.enAttente ?? 0,
+      rejetes: data.rejetes ?? data.rejet ?? 0
+    });
+
+    setStats({
+      global: normalize(globalStats),
+      documents: normalizeDocuments(normalize(documentStats)),
+      candidats: normalize(normalize(candidatsStats))
+    });
+
+    // 👀 Debug temporaire pour vérifier les données reçues
+    console.log({
+      global: normalize(globalStats),
+      documents: normalizeDocuments(normalize(documentStats)),
+      candidats: normalize(normalize(candidatsStats))
+    });
+  } catch (error) {
+    console.error('Erreur chargement statistiques:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -67,50 +84,51 @@ const SuperAdminStatistics = () => {
     );
   }
 
-  const statsCards = [
-    {
-      title: 'Total Candidats',
-      value: stats.global.totalCandidats || 0,
-      icon: Users,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-100'
-    },
-    {
-      title: 'Concours Actifs',
-      value: stats.global.totalConcours || 0,
-      icon: Trophy,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-100'
-    },
-    {
-      title: 'Documents Validés',
-      value: stats.documents.valides || 0,
-      icon: CheckCircle,
-      color: 'text-green-500',
-      bgColor: 'bg-green-100'
-    },
-    {
-      title: 'Documents en attente',
-      value: stats.documents.en_attente || 0,
-      icon: Clock,
-      color: 'text-orange-500',
-      bgColor: 'bg-orange-100'
-    },
-    {
-      title: 'Documents Rejetés',
-      value: stats.documents.rejetes || 0,
-      icon: XCircle,
-      color: 'text-red-500',
-      bgColor: 'bg-red-100'
-    },
-    {
-      title: 'Établissements',
-      value: stats.global.totalEtablissements || 0,
-      icon: Building,
-      color: 'text-indigo-500',
-      bgColor: 'bg-indigo-100'
-    }
-  ];
+const statsCards = [
+  {
+    title: 'Total Candidats',
+    value: stats.global?.totaux?.candidats || 0,
+    icon: Users,
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-100'
+  },
+  {
+    title: 'Paiements Validés',
+    value: stats.global?.totaux?.paiements_valides || 0,
+    icon: CheckCircle,
+    color: 'text-green-500',
+    bgColor: 'bg-green-100'
+  },
+  {
+    title: 'Paiements en Attente',
+    value: stats.global?.totaux?.paiements_en_attente || 0,
+    icon: Clock,
+    color: 'text-orange-500',
+    bgColor: 'bg-orange-100'
+  },
+  {
+    title: 'Montant Total Payé (FCFA)',
+    value: stats.global?.totaux?.montant_total || 0,
+    icon: TrendingUp,
+    color: 'text-emerald-500',
+    bgColor: 'bg-emerald-100'
+  },
+  {
+    title: 'Documents Validés',
+    value: stats.documents?.valides || 0,
+    icon: CheckCircle,
+    color: 'text-green-500',
+    bgColor: 'bg-green-100'
+  },
+  {
+    title: 'Documents Rejetés',
+    value: stats.documents?.rejetes || 0,
+    icon: XCircle,
+    color: 'text-red-500',
+    bgColor: 'bg-red-100'
+  }
+];
+
 
   // Données pour graphiques
   const documentStatusData = [

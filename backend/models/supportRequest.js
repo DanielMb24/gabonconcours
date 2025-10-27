@@ -1,8 +1,8 @@
-const {getConnection} = require('../config/database');
+const { getConnection } = require('../config/database');
 
 class SupportRequest {
     static async findAll() {
-        const connection = getConnection();
+        const connection = await getConnection();
         const [rows] = await connection.execute(
             'SELECT * FROM support_requests ORDER BY createdAt DESC'
         );
@@ -10,7 +10,7 @@ class SupportRequest {
     }
 
     static async findById(id) {
-        const connection = getConnection();
+        const connection = await getConnection();
         const [rows] = await connection.execute(
             'SELECT * FROM support_requests WHERE id = ?',
             [id]
@@ -18,14 +18,14 @@ class SupportRequest {
         return rows[0] || null;
     }
 
-    static async create(supportData) {
-        const connection = getConnection();
+    static async create(data) {
+        const connection = await getConnection();
         const [result] = await connection.execute(
             'INSERT INTO support_requests (name, email, message, createdAt) VALUES (?, ?, ?, ?)',
-            [supportData.name, supportData.email, supportData.message, new Date()]
+            [data.name, data.email, data.message, new Date()]
         );
 
-        return {id: result.insertId, ...supportData, createdAt: new Date()};
+        return { id: result.insertId, ...data, createdAt: new Date() };
     }
 }
 

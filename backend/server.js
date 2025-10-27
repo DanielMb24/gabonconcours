@@ -133,7 +133,7 @@ app.use('/api/admin-documents', adminDocumentsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/stats', statsRoutes);
-app.use('/api/support', supportRoutes);
+app.use('/api/support', supportNewRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/admin-management', adminManagementRoutes);
 app.use('/api/documents-extended', documentsExtendedRoutes);

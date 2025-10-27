@@ -419,16 +419,7 @@ const DashboardAdmin: React.FC = () => {
                         <MessagerieAdmin />
                     </TabsContent>
                     <TabsContent value="AdminProfile">
-                        <AdminProfile admin={{
-                        id: adminData.id,
-                        nom: '',
-                        prenom: '',
-                        email: '',
-                        role: '',
-                        etablissement_nom: ''
-                    }} onUpdate={function(): void {
-                        throw new Error('Function not implemented.');
-                    } } />
+                        <AdminProfile  />
                     </TabsContent>
                 </Tabs>
             </div>

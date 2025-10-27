@@ -14,10 +14,34 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+import {useAdminAuth} from '@/contexts/AdminAuthContext';
+interface SupportRequest {
+    id: number;
+    sujet: string;
+    message: string;
+    status: string;
+    created_at: string;
+}
+// ✅ Interface pour typer la réponse du backend
+interface SupportMessage {
+  id: number;
+  nom: string;
+  email: string;
+  message: string;
+  statut: 'en_attente' | 'traite' | string;
+  created_at: string;
+}
+
+interface ApiResponse {
+  success?: boolean;
+  data?: SupportMessage[] | { requests?: SupportMessage[] } | any;
+}
+
 const SuperAdminSupport = () => {
-  const [messages, setMessages] = useState<any[]>([]);
+     const {admin, logout} = useAdminAuth();
+  const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [selectedMessage, setSelectedMessage] = useState<SupportMessage | null>(null);
   const [reponse, setReponse] = useState('');
   const [sending, setSending] = useState(false);
 
@@ -26,18 +50,36 @@ const SuperAdminSupport = () => {
   }, []);
 
   const loadMessages = async () => {
-    try {
-      const response = await apiService.makeRequest('/support', 'GET');
-   const data = response.data || response; 
-      if (data && Array.isArray(data)) {
+  try {
+    const response = await apiService.makeRequest<any>('/support', 'GET');
+
+    // Certaines API renvoient les données sous response.data, d’autres directement
+    const data = response?.data || response;
+
+    // Vérifie si la réponse contient un tableau de messages
+    if (Array.isArray(data)) {
       setMessages(data);
+    } 
+    else if (Array.isArray(data.data)) {
+      setMessages(data.data);
+    } 
+    else if (Array.isArray(data.requests)) {
+      setMessages(data.requests);
+    } 
+    else {
+      console.warn('Format inattendu de la réponse API:', data);
+      setMessages([]);
     }
-    } catch (error) {
-      console.error('Erreur chargement messages:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    console.log('✅ Messages chargés avec succès:', data);
+
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des messages:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleRepondre = async () => {
     if (!reponse.trim() || !selectedMessage) {
@@ -51,16 +93,14 @@ const SuperAdminSupport = () => {
 
     setSending(true);
     try {
-      const response = await apiService.makeRequest(
-        `/support/${selectedMessage.id}/repondre`,
-        'POST',
-        {
+     const response = await apiService.makeRequest<ApiResponse>(
+  `/support/${selectedMessage.id}/repondre`, 'POST', {
           reponse: reponse,
-          admin_id: 43 // À remplacer par l'ID de l'admin connecté
+          admin_id:admin.id
         }
       );
 
-      if (response.success) {
+      if (response?.success || response?.data?.success) {
         toast({
           title: 'Succès',
           description: 'Réponse envoyée par email'
