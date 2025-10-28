@@ -317,7 +317,7 @@ class PDFService {
         doc.setTextColor(this.textColor[0], this.textColor[1], this.textColor[2]);
         doc.setFont('helvetica', 'normal');
 
-        const addDetail = (label: string, value: string | undefined, isMultiline: boolean = false) => {
+        const addDetail = (label: string, value: string | undefined, isMultiline = false) => {
             doc.setFont('helvetica', 'bold');
             doc.text(label + ':', x, currentY);
             doc.setFont('helvetica', 'normal');
@@ -365,7 +365,7 @@ class PDFService {
         doc.setTextColor(this.textColor[0], this.textColor[1], this.textColor[2]);
         doc.setFont('helvetica', 'normal');
 
-        const addDetail = (label: string, value: string | undefined, detailX: number, isMultiline: boolean = false) => {
+        const addDetail = (label: string, value: string | undefined, detailX: number, isMultiline = false) => {
             doc.setFont('helvetica', 'bold');
             doc.text(`${label}:`, detailX, currentY);
             doc.setFont('helvetica', 'normal');
