@@ -12,7 +12,7 @@ const RecentActivity = () => {
         ...candidats.slice(0, 3).map(candidat => ({
             id: `candidat-${candidat.id}`,
             type: 'inscription' as const,
-            title: `Nouvelle inscription`,
+            title: "Nouvelle inscription",
             description: `${candidat.prncan} ${candidat.nomcan}`,
             time: candidat.created_at,
             badge: 'Nouveau candidat',
@@ -21,7 +21,7 @@ const RecentActivity = () => {
         ...paiements.slice(0, 2).map(paiement => ({
             id: `paiement-${paiement.id}`,
             type: 'paiement' as const,
-            title: `Paiement reçu`,
+            title: "Paiement reçu",
             description: `${paiement.montant?.toLocaleString() || '0'} FCFA`,
             time: paiement.created_at,
             badge: 'Paiement',

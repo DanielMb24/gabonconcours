@@ -75,7 +75,7 @@ class Note {
         const connection = getConnection();
         
         await connection.execute(
-            `UPDATE notes SET note = ?, coefficient = ?, updated_at = NOW() WHERE id = ?`,
+            "UPDATE notes SET note = ?, coefficient = ?, updated_at = NOW() WHERE id = ?",
             [noteData.note, noteData.coefficient || 1, id]
         );
         

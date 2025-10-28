@@ -57,7 +57,7 @@ router.put('/:id', async (req, res) => {
 
         // Mettre à jour le statut sur documents.id
         await connection.execute?.(
-            `UPDATE documents SET statut = ?, commentaire = ?, updated_at = NOW() WHERE id = ?`,
+            "UPDATE documents SET statut = ?, commentaire = ?, updated_at = NOW() WHERE id = ?",
             [statut, commentaire || null, id]
         );
 

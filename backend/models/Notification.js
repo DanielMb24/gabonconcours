@@ -33,7 +33,7 @@ class Notification {
 
         try {
             const [rows] = await connection.execute(
-                `SELECT * FROM notifications WHERE candidat_id = ? ORDER BY created_at DESC`,
+                "SELECT * FROM notifications WHERE candidat_id = ? ORDER BY created_at DESC",
                 [candidatId]
             );
             return rows;

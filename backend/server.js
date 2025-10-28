@@ -254,7 +254,7 @@ const startServer = async () => {
         app.listen(PORT, () => {
             console.log(` Serveur démarré sur le port ${PORT}`);
             console.log(` API accessible sur: http://localhost:${PORT}/api`);
-            console.log(` Interface admin: http://localhost:5173/admin`);
+            console.log(" Interface admin: http://localhost:5173/admin");
         });
     } catch (error) {
         console.error(' Erreur de connexion à la base de données:', error.message);

@@ -82,7 +82,7 @@ const Documents = () => {
             setUploadSuccess(true);
             toast({
                 title: 'Documents enregistrés !',
-                description: `Les documents ont été uploadés.`,
+                description: "Les documents ont été uploadés.",
             });
             setTimeout(() => {
                 navigate(`/paiement/${encodeURIComponent(numeroCandidature!)}`);

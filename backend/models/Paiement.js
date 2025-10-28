@@ -44,14 +44,14 @@ class Paiement {
 
     static async findById(id) {
         const connection = getConnection();
-        const [rows] = await connection.execute(`SELECT * FROM paiements WHERE id = ?`, [id]);
+        const [rows] = await connection.execute("SELECT * FROM paiements WHERE id = ?", [id]);
         return rows[0] || null;
     }
 
     static async findByNupcan(nupcan) {
         const connection = getConnection();
         const [rows] = await connection.execute(
-            `SELECT * FROM paiements WHERE nupcan = ? ORDER BY created_at DESC LIMIT 1`,
+            "SELECT * FROM paiements WHERE nupcan = ? ORDER BY created_at DESC LIMIT 1",
             [nupcan]
         );
         return rows[0] || null;
