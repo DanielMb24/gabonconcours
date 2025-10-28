@@ -46,7 +46,7 @@ const AddConcoursForm: React.FC<Props> = ({onSuccess}) => {
 
     const mutation = useMutation({
         mutationFn: (data: ConcoursFormData) => {
-            // @ts-ignore
+            // @ts-expect-error
             return apiService.createConcours(data);
         },
         onError: () => {

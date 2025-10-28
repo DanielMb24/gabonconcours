@@ -243,7 +243,7 @@ const Concours = () => {
         "Chargement des établissements..."
     );
 
-    // @ts-ignore
+    // @ts-expect-error
     return (
         <Card>
             <CardHeader>

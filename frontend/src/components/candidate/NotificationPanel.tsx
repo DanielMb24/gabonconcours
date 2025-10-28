@@ -61,7 +61,7 @@ const NotificationPanel = ({nupcan}: { nupcan: string }) => {
             queryClient.invalidateQueries({queryKey: ['notifications', nupcan]});
             setSelectedIds((prev) => {
                 const newSet = new Set(prev);
-                // @ts-ignore
+                // @ts-expect-error
                 newSet.delete(id);
                 return newSet;
             });
