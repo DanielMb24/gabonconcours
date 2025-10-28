@@ -146,6 +146,10 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
         const updatedDoc = await Document.replace(id, newFileName);
 
         console.log(`✅ Document ${id} remplacé avec succès`);
+        
+        // Return the full URL path for the document
+        const documentUrl = `/uploads/documents/${newFileName}`;
+        
         res.json({ 
             success: true, 
             message: 'Document remplacé avec succès', 
@@ -154,7 +158,8 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
                 nomdoc: updatedDoc.nomdoc,
                 type: updatedDoc.type,
                 statut: updatedDoc.statut,
-                nom_fichier: updatedDoc.nom_fichier
+                nom_fichier: updatedDoc.nom_fichier,
+                url: documentUrl
             }
         });
     } catch (error) {

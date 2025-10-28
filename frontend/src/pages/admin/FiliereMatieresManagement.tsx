@@ -192,7 +192,7 @@ const FiliereMatieresManagement = () => {
     };
 
     const totalCoefficients = Array.from(selectedMatieres).reduce(
-        (sum, id) => sum + (coefficients[id] || 0), 0
+        (sum, id) => sum + (parseFloat(coefficients[id]?.toString() || '0') || 0), 0
     );
 
     return (
@@ -229,7 +229,7 @@ const FiliereMatieresManagement = () => {
                                 <div className="flex justify-between items-center mb-4">
                                     <Label className="text-lg">Matières disponibles</Label>
                                     <Badge variant="secondary" className="text-base">
-                                        Total coefficients: {totalCoefficients.toFixed(1)}
+                                        Total coefficients: {(typeof totalCoefficients === 'number' && !isNaN(totalCoefficients)) ? totalCoefficients.toFixed(1) : '0.0'}
                                     </Badge>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3 max-h-[500px] overflow-y-auto">

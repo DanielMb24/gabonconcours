@@ -36,6 +36,7 @@ import ConcoursBasedDashboard from "@/components/admin/ConcoursBasedDashboard.ts
 import AdminProfile from "@/components/admin/AdminProfile.tsx";
 import FiliereConcoursFilter from "@/components/admin/FiliereConcoursFilter.tsx";
 import SubAdminsManager from "@/components/admin/SubAdminsManager.tsx";
+import NotificationAlerts from '@/components/admin/NotificationAlerts';
 
 // Composant wrapper pour DocumentValidation
 const DocumentValidationTab: React.FC = () => {
@@ -208,8 +209,10 @@ const DashboardAdmin: React.FC = () => {
                     <h1 className="text-4xl font-bold mb-2">Tableau de Bord Administration</h1>
                     <p className="text-muted-foreground">Gestion par concours
                         - {adminData.etablissement_nom || 'École Normale Supérieure'}</p>
-
                 </div>
+
+                {/* Notifications / Alertes */}
+                <NotificationAlerts />
 
                 <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)} className="space-y-6">
                 <TabsList className="grid w-full grid-cols-5">
