@@ -182,7 +182,7 @@ class CandidatureService {
                     const concoursResponse = await apiService.getConcoursById(candidatData.concours_id.toString());
                     console.log('Service: Réponse brute concours:', concoursResponse);
 
-                    if (concoursResponse && concoursResponse.data) {
+                    if (concoursResponse?.data) {
                         concours = concoursResponse.data;
                         console.log('Service: Concours récupéré avec succès:', concours);
                     } else {
@@ -203,7 +203,7 @@ class CandidatureService {
                     const filiereResponse = await apiService.getFiliereWithMatieres(candidatData.filiere_id.toString());
                     console.log('Service: Réponse filiere:', filiereResponse);
 
-                    if (filiereResponse && filiereResponse.data) {
+                    if (filiereResponse?.data) {
                         filiere = filiereResponse.data;
                         console.log('Service: filiere récupéré avec succès:', filiere);
                     } else {

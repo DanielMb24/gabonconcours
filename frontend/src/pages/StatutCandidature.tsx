@@ -266,7 +266,7 @@ const StatutCandidature = () => {
                 </div>
 
                 {/* Matières détaillées */}
-                {filiere && filiere.matieres && filiere.matieres.length > 0 && (
+                {filiere?.matieres && filiere.matieres.length > 0 && (
                     <Card className="mb-8">
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">

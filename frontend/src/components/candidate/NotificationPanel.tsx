@@ -79,7 +79,7 @@ const NotificationPanel = ({nupcan}: { nupcan: string }) => {
     console.log('Données reçues:', notificationsData);
     if (error) console.error('Erreur API:', error);
 
-    const notifications = notificationsData && notificationsData.success && Array.isArray(notificationsData.data)
+    const notifications = notificationsData?.success && Array.isArray(notificationsData.data)
         ? notificationsData.data
         : [];
     const unreadCount = notifications.filter((n: Notification) => n.statut === 'non_lu').length;

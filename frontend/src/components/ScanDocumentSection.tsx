@@ -106,7 +106,7 @@ const ScanDocumentSection: React.FC<ScanDocumentSectionProps> = ({
     };
 
     const handleAutoFill = () => {
-        if (scanResult && scanResult.success) {
+        if (scanResult?.success) {
             onScanSuccess(scanResult);
             toast({
                 title: "Auto-remplissage",
