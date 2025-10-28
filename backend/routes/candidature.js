@@ -87,7 +87,7 @@ function parseDocumentInfo(text) {
     // Extraction du nom
     for (const pattern of patterns.nom) {
         const match = cleanText.match(pattern);
-        if (match && match[1]) {
+        if (match?.[1]) {
             result.nom = match[1].trim().toUpperCase();
             break;
         }
@@ -96,7 +96,7 @@ function parseDocumentInfo(text) {
     // Extraction des prénoms
     for (const pattern of patterns.prenoms) {
         const match = cleanText.match(pattern);
-        if (match && match[1]) {
+        if (match?.[1]) {
             result.prenoms = match[1].trim().replace(/\s+/g, ' ');
             break;
         }
@@ -105,7 +105,7 @@ function parseDocumentInfo(text) {
     // Extraction de la date de naissance
     for (const pattern of patterns.dateNaissance) {
         const match = cleanText.match(pattern);
-        if (match && match[1]) {
+        if (match?.[1]) {
             const rawDate = match[1].trim();
             const parsedDate = parseDate(rawDate);
             if (parsedDate) {

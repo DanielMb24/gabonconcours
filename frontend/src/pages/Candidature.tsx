@@ -847,7 +847,7 @@ const Candidature = () => {
             // Ajouter la photo
 
             // NIP optionnel
-            if (candidat.nipcan && candidat.nipcan.trim()) {
+            if (candidat.nipcan?.trim()) {
                 formData.append('nipcan', candidat.nipcan.trim());
             }
 

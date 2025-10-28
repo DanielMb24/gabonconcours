@@ -78,7 +78,7 @@ export class ApiService {
         } catch (error: any) {
             console.error(`Erreur lors de la requête vers ${url}:`, error);
 
-            if (error.response && error.response.data) {
+            if (error.response?.data) {
                 return {
                     success: false,
                     message: error.response.data.message || 'Erreur lors de la requête',
@@ -112,7 +112,7 @@ export class ApiService {
         } catch (error: any) {
             console.error(`Erreur lors de la requête FormData vers ${url}:`, error);
 
-            if (error.response && error.response.data) {
+            if (error.response?.data) {
                 return {
                     success: false,
                     message: error.response.data.message || 'Erreur lors de la requête',
