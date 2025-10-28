@@ -68,8 +68,18 @@ class Filiere {
 
     static async update(id, filiereData) {
         const connection = getConnection();
-        const fields = Object.keys(filiereData).map(key => `${key} = ?`).join(', ');
-        const values = [...Object.values(filiereData), id];
+        
+        // Filtrer les champs qui n'existent pas dans la table filieres
+        const validFields = ['nomfil', 'description', 'niveau_id'];
+        const filteredData = Object.keys(filiereData)
+            .filter(key => validFields.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = filiereData[key];
+                return obj;
+            }, {});
+        
+        const fields = Object.keys(filteredData).map(key => `${key} = ?`).join(', ');
+        const values = [...Object.values(filteredData), id];
 
         await connection.execute(
             `UPDATE filieres SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,

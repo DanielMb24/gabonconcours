@@ -433,7 +433,7 @@ const GestionAdmins = () => {
                                         <SelectValue placeholder="Sélectionner un établissement"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Aucun établissement</SelectItem>
+                                        <SelectItem value="none">Aucun établissement</SelectItem>
                                         {etablissements.map((etablissement: any) => (
                                             <SelectItem key={etablissement.id} value={etablissement.id.toString()}>
                                                 {etablissement.nomets}

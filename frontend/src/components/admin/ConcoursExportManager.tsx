@@ -118,7 +118,7 @@ const ConcoursExportManager: React.FC = () => {
                 <SelectValue placeholder="Tous les concours" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les concours</SelectItem>
+                <SelectItem value="all">Tous les concours</SelectItem>
                 {concoursData?.map((c: any) => (
                   <SelectItem key={c.id} value={c.id.toString()}>
                     <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ const ConcoursExportManager: React.FC = () => {
                 <SelectValue placeholder="Toutes les filières" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les filières</SelectItem>
+                <SelectItem value="all">Toutes les filières</SelectItem>
                 {filieresData?.map((f: any) => (
                   <SelectItem key={f.id} value={f.id.toString()}>
                     {f.nomfil}

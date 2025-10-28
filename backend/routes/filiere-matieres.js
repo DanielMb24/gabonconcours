@@ -9,11 +9,11 @@ router.get('/filiere/:filiereId', async (req, res) => {
         const connection = getConnection();
         
         const [rows] = await connection.execute(`
-            SELECT fm.*, m.nommat as nom_matiere, m.description
+            SELECT fm.*, m.nom_matiere, m.description
             FROM filiere_matieres fm
             LEFT JOIN matieres m ON fm.matiere_id = m.id
             WHERE fm.filiere_id = ?
-            ORDER BY m.nommat
+            ORDER BY m.nom_matiere
         `, [filiereId]);
         
         res.json({

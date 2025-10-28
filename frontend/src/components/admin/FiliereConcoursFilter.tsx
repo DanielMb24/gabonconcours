@@ -161,7 +161,7 @@ const FiliereConcoursFilter: React.FC = () => {
                 <SelectValue placeholder="Tous les concours" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les concours</SelectItem>
+                <SelectItem value="all">Tous les concours</SelectItem>
                 {concours.map((c) => (
                   <SelectItem key={c.id} value={c.id.toString()}>
                     {c.libcnc}
@@ -178,7 +178,7 @@ const FiliereConcoursFilter: React.FC = () => {
                 <SelectValue placeholder="Toutes les filières" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les filières</SelectItem>
+                <SelectItem value="all">Toutes les filières</SelectItem>
                 {filieres.map((f) => (
                   <SelectItem key={f.id} value={f.id.toString()}>
                     {f.nomfil}
