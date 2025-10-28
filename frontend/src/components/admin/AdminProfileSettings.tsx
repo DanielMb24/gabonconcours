@@ -43,7 +43,7 @@ const AdminProfileSettings: React.FC = () => {
 
             if (response.success) {
                 toast({ title: 'Succès', description: 'Profil mis à jour avec succès' });
-                // @ts-ignore
+                // @ts-expect-error
                 setAdmin(response.data);
             } else throw new Error(response.message);
         } catch (error: unknown) {
