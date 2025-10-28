@@ -7,15 +7,15 @@ const { sendEmail } = require('../services/emailService');
 
 router.post('/requests', async (req, res) => {
     try {
-        const { name, email, message } = req.body;
+        const { name, email, message, createdAt } = req.body;
 
         if (!name || !email || !message) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
-        const request = await SupportRequest.create({ name, email, message });
+        const request = await SupportRequest.create({ name, email, message,createdAt });
 
-        res.status(201).json({
+        res.status(201).json({ 
             success: true,
             message: 'Support request submitted successfully',
             data: request
@@ -25,7 +25,6 @@ router.post('/requests', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 
 // Récupérer toutes les demandes (super admin)
@@ -98,30 +97,21 @@ router.put('/requests/:id', async (req, res) => {
 router.post('/requests/:id/responses', async (req, res) => {
     try {
         const { admin_id, message, is_internal_note } = req.body;
-        
+
         if (!admin_id || !message) {
-            return res.status(400).json({
-                success: false,
-                message: 'admin_id et message requis'
-            });
+            return res.status(400).json({ success: false, message: 'admin_id et message requis' });
         }
-        
+
         const request = await SupportRequest.findById(req.params.id);
-        
-        if (!request) {
-            return res.status(404).json({
-                success: false,
-                message: 'Demande non trouvée'
-            });
-        }
-        
+        if (!request) return res.status(404).json({ success: false, message: 'Demande non trouvée' });
+
         const response = await SupportRequest.addResponse({
             support_request_id: req.params.id,
             admin_id,
             message,
             is_internal_note: is_internal_note || false
         });
-        
+
         // Si ce n'est pas une note interne, envoyer email au client
         if (!is_internal_note) {
             try {
@@ -131,10 +121,10 @@ router.post('/requests/:id/responses', async (req, res) => {
                     `
                     <h2>Nouvelle réponse à votre demande</h2>
                     <p>Bonjour ${request.name},</p>
-                    <p>Vous avez reçu une réponse concernant votre demande:</p>
-                    <p><strong>Sujet:</strong> ${request.sujet}</p>
+                    <p>Vous avez reçu une réponse concernant votre demande: ${request.message}</p>
+                   
                     <p><strong>Réponse:</strong></p>
-                    <p>${message}</p>
+                    ${message}
                     <p>Numéro de référence: #${request.id}</p>
                     <p>Cordialement,<br>L'équipe GabConcours</p>
                     `
@@ -143,23 +133,17 @@ router.post('/requests/:id/responses', async (req, res) => {
                 console.error('Erreur envoi email:', emailError);
             }
         }
-        
+
         // Mettre à jour le statut
-        await SupportRequest.update(req.params.id, { statut: 'en_cours' });
-        
-        res.json({
-            success: true,
-            message: 'Réponse ajoutée avec succès',
-            data: response
-        });
+        await SupportRequest.update(req.params.id, { statut: 'traite' });
+
+        res.json({ success: true, message: 'Réponse ajoutée avec succès', data: response });
     } catch (error) {
         console.error('Erreur ajout réponse:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 });
+
 
 // Récupérer les réponses d'une demande
 router.get('/requests/:id/responses', async (req, res) => {
@@ -180,3 +164,4 @@ router.get('/requests/:id/responses', async (req, res) => {
 });
 
 module.exports = router;
+

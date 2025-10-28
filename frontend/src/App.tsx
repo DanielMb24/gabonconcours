@@ -34,6 +34,7 @@ import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute';
 import AdminLogin from '@/pages/admin/Login';
 import AdminConcours from '@/pages/admin/Concours';
 import AdminCandidats from '@/pages/admin/Candidats';
+import SuperAdminCandidats from '@/pages/admin/CandList';
 import AdminEtablissements from '@/pages/admin/Etablissements';
 import AdminDossiers from '@/pages/admin/Dossiers';
 import AdminPaiements from '@/pages/admin/Paiements';
@@ -130,7 +131,8 @@ function App() {
                             <Route path="dashboard" element={<Dashboard/>}/>
                             <Route path="concours" element={<ConcoursBasedDashboard/>}/>
                             <Route path="concour" element={<AdminConcours/>}/>
-                            <Route path="candidats" element={<AdminCandidats/>}/>
+                            <Route path="candidats" element={<AdminCandidats/>}/>  
+                             <Route path="candList" element={<SuperAdminCandidats/>}/>
                             <Route path="candidats/:nupcan" element={<CandidateManagement/>}/>
                             <Route path="etablissements" element={<AdminEtablissements/>}/>
                             <Route path="dossiers" element={<AdminDossiers/>}/>

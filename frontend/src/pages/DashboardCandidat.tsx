@@ -80,43 +80,7 @@
                 navigate(`/document/${encodeURIComponent(nupcan)}`);
             };
 
-            const TelechargerRecu = async () => {
-                if (!candidatureData) return;
-                try {
-                    setIsDownloading(true);
-                    const recuData = {
-                        candidat: {
-                            ...candidatureData.candidat,
-                            ldncan: candidatureData.candidat.ldncan || 'Libreville',
-                            phtcan: typeof candidatureData.candidat.phtcan === 'string' ? candidatureData.candidat.phtcan : undefined,
-                        },
-                        concours: {
-                            ...candidatureData.concours,
-                            fracnc: candidatureData.concours.fracnc || 0,
-                            sescnc: candidatureData.concours.sescnc || '',
-                        },
-                        filiere: candidatureData.filiere,
-                        paiement: candidatureData.paiement || {
-                            reference: 'N/A',
-                            montant: parseFloat(candidatureData.concours.fracnc || '0'),
-                            date: new Date().toISOString(),
-                            statut: parseFloat(candidatureData.concours.fracnc || '0') === 0 ? 'gratuit' : 'en_attente',
-                            methode: 'N/A',
-                        },
-                        documents: candidatureData.documents || [],
-                    };
-                    await receiptService.downloadReceiptPDF(recuData);
-                    toast({ title: 'Téléchargement réussi', description: 'Votre reçu PDF a été téléchargé avec succès' });
-                } catch (error) {
-                    toast({
-                        title: 'Erreur de téléchargement',
-                        description: 'Impossible de télécharger le reçu PDF',
-                        variant: 'destructive'
-                    });
-                } finally {
-                    setIsDownloading(false);
-                }
-            };
+       
 
             const TelechargerRecuPNG = async () => {
                 if (!candidatureData) return;
@@ -156,43 +120,74 @@
                 }
             };
 
-            const handleEmailReceipt = async () => {
-                if (!candidatureData) return;
-                try {
-                    setIsSendingEmail(true);
-                    const recuData = {
-                        candidat: {
-                            ...candidatureData.candidat,
-                            ldncan: candidatureData.candidat.ldncan || 'Libreville',
-                            phtcan: typeof candidatureData.candidat.phtcan === 'string' ? candidatureData.candidat.phtcan : undefined,
-                        },
-                        concours: {
-                            ...candidatureData.concours,
-                            fracnc: candidatureData.concours.fracnc || 0,
-                            sescnc: candidatureData.concours.sescnc || '',
-                        },
-                        filiere: candidatureData.filiere,
-                        paiement: candidatureData.paiement || {
-                            reference: 'N/A',
-                            montant: parseFloat(candidatureData.concours.fracnc || '0'),
-                            date: new Date().toISOString(),
-                            statut: parseFloat(candidatureData.concours.fracnc || '0') === 0 ? 'gratuit' : 'en_attente',
-                            methode: 'N/A',
-                        },
-                        documents: candidatureData.documents || [],
-                    };
-                    await receiptService.generateAndSendReceiptEmail(recuData, candidatureData.candidat.maican);
-                    toast({ title: 'Reçu envoyé', description: 'Le reçu a été envoyé à votre adresse email avec succès' });
-                } catch (error) {
-                    toast({
-                        title: 'Erreur d\'envoi',
-                        description: 'Impossible d\'envoyer le reçu par email',
-                        variant: 'destructive'
-                    });
-                } finally {
-                    setIsSendingEmail(false);
-                }
-            };
+         const handleEmailReceipt = async () => {
+    if (!candidatureData) return;
+    try {
+        setIsSendingEmail(true);
+        const recuData = {
+            candidat: {
+                ...candidatureData.candidat,
+                ldncan: candidatureData.candidat.ldncan || 'Libreville',
+                phtcan: typeof candidatureData.candidat.phtcan === 'string' ? candidatureData.candidat.phtcan : undefined,
+            },
+            concours: {
+                ...candidatureData.concours,
+                fracnc: candidatureData.concours.fracnc || 0,
+                sescnc: candidatureData.concours.sescnc || '',
+            },
+            filiere: candidatureData.filiere,
+            paiement: candidatureData.paiement || {
+                reference: 'N/A',
+                montant: parseFloat(candidatureData.concours.fracnc || '0'),
+                date: new Date().toISOString(),
+                statut: parseFloat(candidatureData.concours.fracnc || '0') === 0 ? 'gratuit' : 'en_attente',
+                methode: 'N/A',
+            },
+            documents: candidatureData.documents || [],
+        };
+        await receiptService.generateAndSendReceiptEmail(recuData, candidatureData.candidat.maican);
+        toast({ title: 'Reçu envoyé', description: 'Le reçu a été envoyé à votre adresse email avec succès' });
+    } catch (error) {
+        toast({ title: 'Erreur d\'envoi', description: 'Impossible d\'envoyer le reçu par email', variant: 'destructive' });
+    } finally {
+        setIsSendingEmail(false);
+    }
+};
+
+const TelechargerRecu = async () => {
+    if (!candidatureData) return;
+    try {
+        setIsDownloading(true);
+        const recuData = {
+            candidat: {
+                ...candidatureData.candidat,
+                ldncan: candidatureData.candidat.ldncan || 'Libreville',
+                phtcan: typeof candidatureData.candidat.phtcan === 'string' ? candidatureData.candidat.phtcan : undefined,
+            },
+            concours: {
+                ...candidatureData.concours,
+                fracnc: candidatureData.concours.fracnc || 0,
+                sescnc: candidatureData.concours.sescnc || '',
+            },
+            filiere: candidatureData.filiere,
+            paiement: candidatureData.paiement || {
+                reference: 'N/A',
+                montant: parseFloat(candidatureData.concours.fracnc || '0'),
+                date: new Date().toISOString(),
+                statut: parseFloat(candidatureData.concours.fracnc || '0') === 0 ? 'gratuit' : 'en_attente',
+                methode: 'N/A',
+            },
+            documents: candidatureData.documents || [],
+        };
+        await receiptService.downloadReceiptPDF(recuData);
+        toast({ title: 'Téléchargement réussi', description: 'Votre reçu PDF a été téléchargé avec succès' });
+    } catch (error) {
+        toast({ title: 'Erreur de téléchargement', description: 'Impossible de télécharger le reçu PDF', variant: 'destructive' });
+    } finally {
+        setIsDownloading(false);
+    }
+};
+
 
             const handleDocumentAdd = async (documents: { name: string; file: File }[]) => {
                 if (!nupcan) return;

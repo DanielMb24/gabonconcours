@@ -81,40 +81,28 @@ const SuperAdminSupport = () => {
 };
 
 
-  const handleRepondre = async () => {
+ const handleRepondre = async () => {
     if (!reponse.trim() || !selectedMessage) {
-      toast({
-        title: 'Réponse requise',
-        description: 'Veuillez entrer une réponse',
-        variant: 'destructive'
-      });
+      toast({ title: 'Réponse requise', description: 'Veuillez entrer une réponse', variant: 'destructive' });
       return;
     }
 
     setSending(true);
     try {
-     const response = await apiService.makeRequest<ApiResponse>(
-  `/support/${selectedMessage.id}/repondre`, 'POST', {
-          reponse: reponse,
-          admin_id:admin.id
-        }
+      const response = await apiService.makeRequest<ApiResponse>(
+        `/support/requests/${selectedMessage.id}/responses`,
+        'POST',
+        { message: reponse, admin_id: admin.id }
       );
 
       if (response?.success || response?.data?.success) {
-        toast({
-          title: 'Succès',
-          description: 'Réponse envoyée par email'
-        });
+        toast({ title: 'Succès', description: 'Réponse envoyée par email' });
         setReponse('');
         setSelectedMessage(null);
         loadMessages();
       }
     } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible d\'envoyer la réponse',
-        variant: 'destructive'
-      });
+      toast({ title: 'Erreur', description: 'Impossible d\'envoyer la réponse', variant: 'destructive' });
     } finally {
       setSending(false);
     }

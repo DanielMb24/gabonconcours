@@ -36,7 +36,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
         if (admin?.role === 'super_admin') {
             return [
                 ...baseItems,
-                { path: '/admin/candidats', label: 'Candidats', icon: Users },
+                { path: '/admin/candList', label: 'Candidats', icon: Users },
                 { path: '/admin/concours-filieres', label: 'Concours x Filières', icon: Trophy },
                 { path: '/admin/filiere-matieres', label: 'Filières x Matières', icon: BookOpen },
                 { path: '/admin/logs', label: 'Journal d\'activité', icon: FileText },

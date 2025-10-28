@@ -32,11 +32,9 @@ const Support = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:3001/api/support', formData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.post('http://localhost:3001/api/support/requests', formData, {
+    headers: { 'Content-Type': 'application/json' }
+});
             if (response.status === 201) {
                 alert('Merci pour votre message ! Nous vous répondrons bientôt.');
                 setFormData({name: '', email: '', message: ''}); // Reset form

@@ -4,7 +4,7 @@ class Etablissement {
     static async findAll() {
         const connection = getConnection();
         const [rows] = await connection.execute(
-            `SELECT e.*, p.nompro as province_nom
+            `SELECT e.*, p.nompro 
        FROM etablissements e
        LEFT JOIN provinces p ON e.province_id = p.id
        ORDER BY e.nomets ASC`
@@ -15,7 +15,7 @@ class Etablissement {
     static async findById(id) {
         const connection = getConnection();
         const [rows] = await connection.execute(
-            `SELECT e.*, p.nompro as province_nom
+            `SELECT e.*, p.nompro 
        FROM etablissements e
        LEFT JOIN provinces p ON e.province_id = p.id
        WHERE e.id = ?`,
@@ -27,13 +27,13 @@ class Etablissement {
     static async create(etablissementData) {
         const connection = getConnection();
         const [result] = await connection.execute(
-            `INSERT INTO etablissements (nomets, address, telephone, email, photo, province_id)
+            `INSERT INTO etablissements (nomets, adretes, telefs, maiets, photo, province_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
             [
                 etablissementData.nomets,
-                etablissementData.adresse|| '',
-                etablissementData.telephone || '',
-                etablissementData.email || '',
+                etablissementData.adretes|| '',
+                etablissementData.telefs || '',
+                etablissementData.maiets || '',
                 etablissementData.photo || '',
                 etablissementData.province_id
             ]
