@@ -85,7 +85,7 @@ class AdminActionService {
     }
 
     // Récupérer l'activité récente
-    async getRecentActivity(limit: number = 50): Promise<AdminAction[]> {
+    async getRecentActivity(limit = 50): Promise<AdminAction[]> {
         try {
             const response = await apiService.makeRequest<{ data: AdminAction[] }>(
                 `/admin-actions/recent?limit=${limit}`,

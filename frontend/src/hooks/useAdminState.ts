@@ -12,7 +12,7 @@ export const useAdminState = (options: AdminStateOptions = {}) => {
 
     const executeAction = useCallback(async (
         action: () => Promise<any>,
-        successMessage: string = 'Action réussie'
+        successMessage = 'Action réussie'
     ) => {
         setIsLoading(true);
         setError(null);
