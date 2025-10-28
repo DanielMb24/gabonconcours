@@ -329,7 +329,7 @@ router.get('/:id', async (req, res) => {
 // GET /api/candidats/nip/:nip - Récupérer un candidat par NIP
 router.get('/nip/:nip', async (req, res) => {
     try {
-        const candidat = await Candidat.findByNip(req.params.nipcan);
+        const candidat = await Candidat.findByNip(req.params.nip);
         if (!candidat) {
             return res.status(404).json({
                 success: false,

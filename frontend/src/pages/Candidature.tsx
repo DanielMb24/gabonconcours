@@ -686,7 +686,7 @@ const Candidature = () => {
 
     // Recherche par NIP gabonais
     const nipSearchMutation = useMutation({
-        mutationFn: (nip: string) => apiService.getCandidatByNupcan(nip),
+        mutationFn: (nip: string) => apiService.getCandidatByNipcan(nip),
         onSuccess: (response) => {
             if (response.success && response.data) {
                 const candidatData = response.data;

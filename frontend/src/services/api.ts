@@ -170,7 +170,9 @@ export class ApiService {
     async getCandidatByNupcan<T>(nupcan: string): Promise<ApiResponse<T>> {
         return this.makeRequest<T>(`/candidats/nupcan/${nupcan}`, 'GET');
     }
-
+ async getCandidatByNipcan<T>(nip: string): Promise<ApiResponse<T>> {
+        return this.makeRequest<T>(`/candidats/nip/${nip}`, 'GET');
+    }
     async createPaiement<T>(data: any): Promise<ApiResponse<T>> {
         return this.makeRequest<T>('/paiements', 'POST', data);
     }
