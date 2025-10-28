@@ -200,7 +200,7 @@ router.post('/admin/repondre', async (req, res) => {
         try {
             await sendEmail(
                 candidat.maican,
-                `Réponse à votre message - GabConcours`,
+                "Réponse à votre message - GabConcours",
                 `
                 <h2>Réponse de l'administration</h2>
                 <p>Bonjour ${candidat.prncan} ${candidat.nomcan},</p>

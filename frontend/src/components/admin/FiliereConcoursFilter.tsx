@@ -64,7 +64,7 @@ const FiliereConcoursFilter: React.FC = () => {
       if (!adminData.etablissement_id) return [];
       
       const response = await apiService.makeRequest<Concours[]>(
-        `/concours`,
+        "/concours",
         'GET'
       );
       

@@ -113,7 +113,7 @@ router.post('/admin', async (req, res) => {
         try {
             await sendEmail(
                 candidat.maican,
-                `Réponse à votre message - GABConcours`,
+                "Réponse à votre message - GABConcours",
                 `
                 <h2>Réponse de l'administration</h2>
                 <p>Bonjour <strong>${candidat.prncan} ${candidat.nomcan}</strong>,</p>

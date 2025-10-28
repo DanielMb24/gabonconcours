@@ -27,7 +27,7 @@ export const subAdminService = {
     },
 
     async create(payload: CreateSubAdminInput): Promise<{ data: SubAdmin }> {
-        return api.post(`/subadmins/create`, payload);
+        return api.post("/subadmins/create", payload);
     },
 
     async delete(id: number): Promise<void> {
