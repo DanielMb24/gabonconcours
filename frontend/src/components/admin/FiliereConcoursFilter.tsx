@@ -61,11 +61,16 @@ const FiliereConcoursFilter: React.FC = () => {
   const { data: concours = [] } = useQuery<Concours[]>({
     queryKey: ['concours-etablissement', adminData.etablissement_id],
     queryFn: async () => {
+      if (!adminData.etablissement_id) return [];
+      
       const response = await apiService.makeRequest<Concours[]>(
-        `/concours/etablissement/${adminData.etablissement_id}`,
+        `/concours`,
         'GET'
       );
-      return response.data || [];
+      
+      // Filter concours by etablissement
+      const allConcours = response.data || [];
+      return allConcours.filter((c: any) => c.etablissement_id === adminData.etablissement_id);
     },
     enabled: !!adminData.etablissement_id,
   });

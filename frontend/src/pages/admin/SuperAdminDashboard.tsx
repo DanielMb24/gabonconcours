@@ -18,6 +18,7 @@ import {
 import {useNavigate} from 'react-router-dom';
 import {adminApiService} from '@/services/adminApi';
 import {apiService} from '@/services/api';
+import NotificationAlerts from '@/components/admin/NotificationAlerts';
 
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
@@ -95,6 +96,9 @@ const SuperAdminDashboard = () => {
                     <p className="text-muted-foreground">Vue d'ensemble de la plateforme GabConcours</p>
                 </div>
             </div>
+
+            {/* Notifications / Alertes */}
+            <NotificationAlerts />
 
             {/* Left Section: Statistiques et Actions Rapides */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

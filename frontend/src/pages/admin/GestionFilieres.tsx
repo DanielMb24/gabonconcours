@@ -132,7 +132,12 @@ const GestionFilieres = () => {
 
     const handleEdit = (item: any) => {
         setEditingItem(item);
-        setFormData({...item, niveau_id: item.niveau_id?.toString()});
+        // Ensure niveau_id is properly set as string
+        const niveauId = item.niveau_id ? item.niveau_id.toString() : '';
+        setFormData({
+            ...item, 
+            niveau_id: niveauId
+        });
         setDialogOpen(true);
     };
 
