@@ -149,17 +149,21 @@ router.post('/admin/repondre', async (req, res) => {
     try {
         const { message_id, nupcan, sujet, message, admin_id } = req.body;
 
+        console.log('📩 Requête reçue pour répondre:', { message_id, nupcan, sujet, message, admin_id });
+
         if (!nupcan || !message) {
             return res.status(400).json({
                 success: false,
-                message: 'NUPCAN et message requis'
+                message: 'NUPCAN et message requis',
+                received: { nupcan, message }
             });
         }
 
         if (!admin_id) {
             return res.status(400).json({
                 success: false,
-                message: 'admin_id requis'
+                message: 'admin_id requis',
+                received: { admin_id }
             });
         }
 
