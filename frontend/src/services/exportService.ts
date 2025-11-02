@@ -6,7 +6,7 @@ class ExportService {
   // Exporter les candidats en Excel
   async exportCandidatesExcel(concoursId?: number): Promise<void> {
     try {
-      const url = `${this.baseUrl}/exports/candidats/excel${concoursId ? `?concours_id=${concoursId}` : ''}`;
+      const url = `${this.baseUrl}/exports/candidatures/concours/${concoursId ? `?concours_id=${concoursId}` : ''}`;
       window.open(url, '_blank');
     } catch (error) {
       console.error('Erreur export Excel candidats:', error);
@@ -17,7 +17,7 @@ class ExportService {
   // Exporter les candidats en PDF
   async exportCandidatesPDF(concoursId?: number): Promise<void> {
     try {
-      const url = `${this.baseUrl}/exports/candidats/pdf${concoursId ? `?concours_id=${concoursId}` : ''}`;
+      const url = `${this.baseUrl}/exports/candidatures/concours/${concoursId ? `?concours_id=${concoursId}` : ''}`;
       window.open(url, '_blank');
     } catch (error) {
       console.error('Erreur export PDF candidats:', error);

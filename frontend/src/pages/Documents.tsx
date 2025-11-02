@@ -22,7 +22,7 @@ interface UploadedDoc extends DocumentOption {
 const documentOptions: DocumentOption[] = [
     {value: 'cni', label: 'Carte Nationale d\'Identité', required: true},
     {value: 'diplome', label: 'Diplôme ou Attestation', required: true},
-    {value: 'photo', label: 'Photo d\'identité (format identité)', required: true},
+    {value: 'certificat médical', label: 'certificat médical', required: true},
     {value: 'acte_naissance', label: 'Acte de naissance', required: true},
 ];
 
@@ -146,14 +146,14 @@ const Documents = () => {
 
         // 2. Gérer les documents personnalisés
         else if (currentUploadType.startsWith('custom_')) {
-            const docKey = currentUploadType; // Utilise la clé générée
+            const docKey = currentUploadType; 
             const currentDoc = uploadedDocuments.get(docKey);
 
             if (currentDoc) {
                 setUploadedDocuments(prev => new Map(prev).set(docKey, {
                     ...currentDoc,
                     file: file,
-                    label: currentDoc.label, // Conserver le label personnalisé
+                    label: currentDoc.label, 
                     required: false,
                     value: docKey,
                 }));

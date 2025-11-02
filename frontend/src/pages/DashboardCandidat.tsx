@@ -30,6 +30,18 @@
             ArrowRight,
             ArrowLeft,
         } from 'lucide-react';
+
+
+
+        import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction
+} from "@/components/ui/alert-dialog";
         import Layout from '@/components/Layout';
         import { candidatureService } from '@/services/candidatureService';
         import BeautifulHorizontalReceipt from '@/components/BeautifulHorizontalReceipt';
@@ -59,7 +71,7 @@
             const [isDownloadingPNG, setIsDownloadingPNG] = useState(false);
             const [selectedDocumentToView, setSelectedDocumentToView] = useState<any | null>(null);
             const [selectedDocumentToEdit, setSelectedDocumentToEdit] = useState<any | null>(null);
-
+const [showAlert, setShowAlert] = useState(false);
             const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'notes'>('overview');
             const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
             const [documentToReplace, setDocumentToReplace] = useState<any | null>(null);
@@ -204,18 +216,13 @@ const TelechargerRecu = async () => {
                 if (progression?.etapeActuelle === 'documents') {
                     navigate(`/documents/${nupcan}`);
                 } else if (progression?.etapeActuelle === 'paiement') {
-                    if (allDocumentsValidated) {
-                        navigate(`/paiement/${nupcan}`);
-                    } else {
-                        toast({
-                            title: 'Documents non validés',
-                            description: 'Vous ne pouvez pas encore procéder au paiement. Tous vos documents doivent d’abord être validés par l’administration.',
-                            variant: 'destructive'
-                        });
-                    }
-                }
-
-            };
+    if (!allDocumentsValidated) {
+      setShowAlert(true);
+      return;
+    }
+    navigate(`/paiement/${nupcan}`);
+  }
+};
 
 
             const handlePostuler = (nupcan: string) => {
@@ -252,8 +259,7 @@ const TelechargerRecu = async () => {
 
 
 
-            // Ref pour le input file global
-            // eslint-disable-next-line react-hooks/rules-of-hooks
+           
             const fileInputRef = React.useRef<HTMLInputElement | null>(null);
             const [currentDocId, setCurrentDocId] = useState<string | null>(null);
 
@@ -340,6 +346,22 @@ const TelechargerRecu = async () => {
 
             return (
                 <Layout>
+                    <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Documents non validés</AlertDialogTitle>
+      <AlertDialogDescription>
+        Vous ne pouvez pas encore procéder au paiement. <br />
+        Tous vos documents doivent d’abord être validés par l’administration.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogAction onClick={() => setShowAlert(false)}>
+        Compris
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         {/* Barre de progression */}
                         <div className="mb-6">
@@ -509,7 +531,7 @@ const TelechargerRecu = async () => {
                                                                     ? 'Payé'
                                                                     : allDocumentsValidated
                                                                         ? 'Autorisé (documents validés)'
-                                                                        : 'En attente de validation'}
+                                                                        : 'En attente de validation des documents'}
                                                         </p>
                                                     </div>
                                                 </div>

@@ -20,7 +20,7 @@ router.get('/candidatures/concours/:concours_id', async (req, res) => {
                 c.prncan,
                 c.maican,
                 c.telcan,
-                c.sexcan,
+            
                 c.dtncan,
                 f.nomfil as filiere,
                 con.libcnc as concours,

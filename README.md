@@ -12,7 +12,7 @@ GabConcours est une plateforme complète de gestion des concours nationaux perme
 - ✅ Soumission et gestion des documents requis
 - ✅ Modification/suppression des documents non validés
 - ✅ Remplacement des documents rejetés
-- ✅ Paiement en ligne (Airtel Money, Moov Money, Virement bancaire)
+- ✅ Paiement en ligne (Airtel Money, Moov Money), pour l'instant statique, juste enregistrement dans la base de données
 - ✅ Génération automatique de reçus PDF
 - ✅ Notifications en temps réel
 - ✅ Messagerie avec l'administration
@@ -20,19 +20,30 @@ GabConcours est une plateforme complète de gestion des concours nationaux perme
 - ✅ Support multilingue (FR/EN)
 - ✅ Mode sombre/clair
 
-### Pour les Administrateurs
+### Pour les Super Administrateur
 - ✅ Tableau de bord avec statistiques complètes
-- ✅ Gestion des concours, filières et établissements
-- ✅ Validation/rejet des documents avec commentaires
-- ✅ Gestion des paiements
-- ✅ Création d'administrateurs par établissement avec rôles
-- ✅ Gestion des permissions (Super Admin, Admin Établissement, Admin Concours, Validateur)
+- ✅ Gestion des concours, filières, filiere_matieres, concours_filieres et établissements
+
+- ✅ Création d'administrateurs par établissement 
+- ✅ Gestion des permissions (Super Admin, Admin Établissement)
 - ✅ Exports PDF et Excel (candidats, documents, paiements)
 - ✅ Messagerie avec les candidats
 - ✅ Profil administrateur modifiable
 - ✅ Changement de mot de passe
 - ✅ Notifications email automatiques
 
+### Pour les Administrateurs
+- ✅ Tableau de bord avec statistiques complètes
+
+- ✅ Validation/rejet des documents avec commentaires
+- ✅ Gestion des paiements
+- ✅ Création d'administrateurs par établissement avec rôles
+
+- ✅ Exports PDF et Excel (candidats, documents, paiements)
+- ✅ Messagerie avec les candidats
+- ✅ Profil administrateur modifiable
+- ✅ Changement de mot de passe
+- ✅ Notifications email automatiques
 ## 🛠️ Technologies
 
 ### Frontend

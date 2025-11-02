@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import ExportModal from '@/components/admin/ExportModal';
+
 import {
     Users,
     FileText,
@@ -98,7 +100,8 @@ const DashboardAdmin: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'candidats' | 'documents' | 'notes' | 'messages'>('overview');
     const [selectedConcours, setSelectedConcours] = useState<number | null>(null);
     const {admin, token, isLoading} = useAdminAuth();
-    // ✅ Définir ici l'objet par défaut
+const [exportModalOpen, setExportModalOpen] = useState(false);
+
     const { data: messages } = useQuery<Message[]>({
         queryKey: ['admin-messages'],
         queryFn: async () => {
@@ -203,6 +206,7 @@ const DashboardAdmin: React.FC = () => {
 
 
     return (
+        
 
             <div className="p-8">
                 <div className="mb-8">
@@ -218,10 +222,7 @@ const DashboardAdmin: React.FC = () => {
                 <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
                         <TabsTrigger value="concours">Concours</TabsTrigger>
-                    <TabsTrigger value="AdminProfile">Profile</TabsTrigger>
-                        <TabsTrigger value="documents">Documents</TabsTrigger>
-                        <TabsTrigger value="notes">Notes</TabsTrigger>
-                        <TabsTrigger value="messages">Messages</TabsTrigger>
+                    
 
                     </TabsList>
 
@@ -287,24 +288,17 @@ const DashboardAdmin: React.FC = () => {
                                         <Trophy className="h-5 w-5" />
                                         Concours Actifs
                                     </CardTitle>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleExportCandidatesExcel}
-                                        >
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Export Excel
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleExportCandidatesPDF}
-                                        >
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Export PDF
-                                        </Button>
-                                    </div>
+                                   <div className="flex gap-2">
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={() => setExportModalOpen(true)} // ✅ ouvre la modale
+  >
+    <Download className="h-4 w-4 mr-2" />
+    Exporter
+  </Button>
+</div>
+
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -410,24 +404,19 @@ const DashboardAdmin: React.FC = () => {
                         <ConcoursBasedDashboard  />
                     </TabsContent>
 
-                    <TabsContent value="documents">
-                        <DocumentValidationTab />
-                    </TabsContent>
-
-                    <TabsContent value="notes">
-                        <SubAdminsManager />
-                    </TabsContent>
-
-                    <TabsContent value="messages">
-                        <MessagerieAdmin />
-                    </TabsContent>
-                    <TabsContent value="AdminProfile">
-                        <AdminProfile  />
-                    </TabsContent>
+                  
                 </Tabs>
+                <ExportModal
+  open={exportModalOpen}
+  onClose={() => setExportModalOpen(false)}
+  concoursList={concoursData || []}
+/>
+
             </div>
+            
 
     );
+    
 };
 
 export default DashboardAdmin;
