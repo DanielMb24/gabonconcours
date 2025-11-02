@@ -54,6 +54,8 @@ import AdminProfileSettings from "@/components/admin/AdminProfileSettings.tsx";
 import AdminLogsView from "@/pages/admin/AdminLogsView.tsx";
 import SuperAdminStatistics from "@/pages/admin/SuperAdminStatistics.tsx";
 import SuperAdminSupport from "@/pages/admin/SuperAdminSupport.tsx";
+import GestionSousAdmins from "@/pages/admin/GestionSousAdmins.tsx";
+import Logs from "@/pages/admin/Logs.tsx";
 
 
 const queryClient = new QueryClient({
@@ -141,7 +143,7 @@ function App() {
                             <Route path="filieres" element={<GestionFilieres/>}/>
                             <Route path="notes" element={<GradeManagement/>}/>
                             <Route path="messagerie" element={<MessagerieAdmin/>}/>
-                            <Route path="sub-admins" element={<SubAdminsManager/>}/>
+                            <Route path="sous-admins" element={<GestionSousAdmins/>}/>
                             <Route path="profile" element={<AdminProfileSettings />} />
 
 
@@ -173,9 +175,14 @@ function App() {
                             }/>
 
 
-                            <Route path="logs" element={
+                            <Route path="logs-admin" element={
                                 <SuperAdminRoute>
                                     <AdminLogsView/>
+                                </SuperAdminRoute>
+                            }/>
+                            <Route path="logs" element={
+                                <SuperAdminRoute>
+                                    <Logs/>
                                 </SuperAdminRoute>
                             }/>
                             <Route path="statistiques" element={

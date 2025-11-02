@@ -185,12 +185,16 @@ router.get('/:id/download', async (req, res) => {
     try {
         const doc = await Document.findById(req.params.id);
         if (!doc) {
+            console.log(`Document ${req.params.id} introuvable en DB`);
             return res.status(404).json({ success: false, message: 'Document introuvable' });
         }
 
         const filePath = path.join(uploadDir, doc.nom_fichier);
+        console.log(`Tentative de téléchargement: ${filePath}`);
+        
         if (!fs.existsSync(filePath)) {
-            return res.status(404).json({ success: false, message: 'Fichier non trouvé sur le serveur' });
+            console.error(`Fichier physique non trouvé: ${filePath}`);
+            return res.status(404).json({ success: false, message: 'Fichier non trouvé' });
         }
 
         // Définir le type MIME approprié
@@ -204,6 +208,10 @@ router.get('/:id/download', async (req, res) => {
         res.setHeader('Content-Disposition', `inline; filename="${doc.nomdoc || doc.nom_fichier}"`);
         
         const fileStream = fs.createReadStream(filePath);
+        fileStream.on('error', (err) => {
+            console.error('Erreur lecture fichier:', err);
+            res.status(500).json({ success: false, message: 'Erreur lecture fichier' });
+        });
         fileStream.pipe(res);
     } catch (error) {
         console.error('Erreur téléchargement document:', error);

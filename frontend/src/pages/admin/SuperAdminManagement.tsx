@@ -15,11 +15,12 @@ const SuperAdminManagement: React.FC = () => {
             </div>
 
             <Tabs defaultValue="concours" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="concours">Concours</TabsTrigger>
                     <TabsTrigger value="etablissements">Établissements</TabsTrigger>
                     <TabsTrigger value="filieres">Filières</TabsTrigger>
                     <TabsTrigger value="matieres">Matières</TabsTrigger>
+                    <TabsTrigger value="niveaux">Niveaux</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="concours">
@@ -36,6 +37,10 @@ const SuperAdminManagement: React.FC = () => {
 
                 <TabsContent value="matieres">
                     <CrudManager entity="matieres" title="Matières" />
+                </TabsContent>
+
+                <TabsContent value="niveaux">
+                    <GestionNiveaux />
                 </TabsContent>
             </Tabs>
         </div>
