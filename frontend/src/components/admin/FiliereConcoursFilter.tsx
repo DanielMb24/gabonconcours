@@ -54,14 +54,24 @@ interface Filiere {
 
 const FiliereConcoursFilter: React.FC = () => {
   const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+  const [selectedEtablissement, setSelectedEtablissement] = useState<string>(adminData.etablissement_id?.toString() || '');
   const [selectedConcours, setSelectedConcours] = useState<string>('');
   const [selectedFiliere, setSelectedFiliere] = useState<string>('');
 
-  // Récupérer les concours de l'établissement
-  const { data: concours = [] } = useQuery<Concours[]>({
-    queryKey: ['concours-etablissement', adminData.etablissement_id],
+  // Récupérer les établissements (pour super admin)
+  const { data: etablissements = [] } = useQuery({
+    queryKey: ['etablissements'],
     queryFn: async () => {
-      if (!adminData.etablissement_id) return [];
+      const response = await apiService.getEtablissements();
+      return response.data || [];
+    },
+  });
+
+  // Récupérer les concours filtrés par établissement
+  const { data: concours = [] } = useQuery<Concours[]>({
+    queryKey: ['concours-etablissement', selectedEtablissement],
+    queryFn: async () => {
+      if (!selectedEtablissement || selectedEtablissement === 'all') return [];
       
       const response = await apiService.makeRequest<Concours[]>(
         `/concours`,
@@ -70,9 +80,9 @@ const FiliereConcoursFilter: React.FC = () => {
       
       // Filter concours by etablissement
       const allConcours = response.data || [];
-      return allConcours.filter((c: any) => c.etablissement_id === adminData.etablissement_id);
+      return allConcours.filter((c: any) => c.etablissement_id === parseInt(selectedEtablissement));
     },
-    enabled: !!adminData.etablissement_id,
+    enabled: !!selectedEtablissement && selectedEtablissement !== 'all',
   });
 
   // Récupérer les filières
@@ -160,10 +170,40 @@ const FiliereConcoursFilter: React.FC = () => {
         {/* Filtres */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Concours</label>
-            <Select value={selectedConcours} onValueChange={setSelectedConcours}>
+            <label className="text-sm font-medium">Établissement</label>
+            <Select value={selectedEtablissement} onValueChange={(value) => {
+              setSelectedEtablissement(value);
+              setSelectedConcours(''); // Reset concours when etablissement changes
+            }}>
               <SelectTrigger>
-                <SelectValue placeholder="Tous les concours" />
+                <SelectValue placeholder="Sélectionner un établissement" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les établissements</SelectItem>
+                {etablissements.map((e: any) => (
+                  <SelectItem key={e.id} value={e.id.toString()}>
+                    {e.nomets}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Concours</label>
+            <Select 
+              value={selectedConcours} 
+              onValueChange={setSelectedConcours}
+              disabled={!selectedEtablissement || selectedEtablissement === 'all' || concours.length === 0}
+            >
+              <SelectTrigger className={!selectedEtablissement || selectedEtablissement === 'all' || concours.length === 0 ? 'opacity-50' : ''}>
+                <SelectValue placeholder={
+                  !selectedEtablissement || selectedEtablissement === 'all' 
+                    ? "Sélectionner d'abord un établissement" 
+                    : concours.length === 0 
+                    ? "Aucun concours disponible"
+                    : "Sélectionner un concours"
+                } />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les concours</SelectItem>
