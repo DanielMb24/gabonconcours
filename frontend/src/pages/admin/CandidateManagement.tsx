@@ -24,7 +24,7 @@ import {receiptService} from '@/services/receiptService';
 import CandidateDocumentManager from '@/components/admin/CandidateDocumentManager';
 import CandidatePhotoCard from '@/components/admin/CandidatePhotoCard';
 import {useAdminState} from '@/hooks/useAdminState';
-import {useAdminAuth} from '@/contexts/AdminAuthContext'; // Ajouté pour accéder au rôle
+import {useAdminAuth} from '@/contexts/AdminAuthContext'; 
 import {apiService} from '@/services/api';
 import NotesManager from "@/components/admin/NotesManager.tsx";
 import {id} from "date-fns/locale";
@@ -34,7 +34,7 @@ const CandidateManagement = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('overview');
     const queryClient = useQueryClient();
-    const {admin} = useAdminAuth(); // Récupère les informations de l'admin connecté
+    const {admin} = useAdminAuth(); 
     const {isLoading: actionLoading, executeAction} = useAdminState();
 
     const {data: candidatureData, isLoading, error, refetch} = useQuery({
@@ -175,6 +175,10 @@ const CandidateManagement = () => {
     const concours = candidatureData.concours;
     const filiere = candidatureData.filiere;
     const paiement = candidatureData.paiement;
+// 🧩 Détermination des onglets selon le rôle
+const role = admin?.admin_role || '';
+const showDocuments = role === 'documents' ;
+const showNotes = role === 'notes';
 
     return (
         <div className="space-y-6">
@@ -203,7 +207,7 @@ const CandidateManagement = () => {
 
             {/* Onglets de navigation */}
             <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex space-x-8">
                     <button
                         onClick={() => setActiveTab('overview')}
                         className={`py-2 px-1 border-b-2 font-medium text-sm ${
@@ -214,26 +218,32 @@ const CandidateManagement = () => {
                     >
                         Vue d'ensemble
                     </button>
-                    <button
-                        onClick={() => setActiveTab('documents')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                            activeTab === 'documents'
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    >
-                        Documents
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('notes')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                            activeTab === 'notes'
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    >
-                        Notes
-                    </button>
+
+                    {showDocuments && (
+                        <button
+                            onClick={() => setActiveTab('documents')}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'documents'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            Documents
+                        </button>
+                    )}
+
+                    {showNotes && (
+                        <button
+                            onClick={() => setActiveTab('notes')}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'notes'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            Notes
+                        </button>
+                    )}
                 </nav>
             </div>
 
@@ -404,8 +414,9 @@ const CandidateManagement = () => {
                 </Card>
             )}
 
-            {/* Gestion des documents */}
-            {activeTab === 'documents' && (
+           
+
+           {activeTab === 'documents' && showDocuments && (
                 <CandidateDocumentManager
                     candidatNupcan={nupcan!}
                     candidatInfo={{
@@ -417,21 +428,22 @@ const CandidateManagement = () => {
                 />
             )}
 
-            {activeTab === 'notes' &&
-               ( candidat.id && candidat.concours_id )? (
-                        <NotesManager
-                            candidatId={candidat.id}
-                            candidatNom={candidat.nomcan}
-                            candidatPrenom={candidat.prncan}
-                            concoursId={candidat.concours_id}
-                        />
-                    ) : (
-                        <Card>
-                            <CardContent className="p-8 text-center text-muted-foreground">
-                                <p></p>
-                            </CardContent>
-                        </Card>
-
+            {/* Gestion des notes */}
+            {activeTab === 'notes' && showNotes && (
+                (candidat.id && candidat.concours_id) ? (
+                    <NotesManager
+                        candidatId={candidat.id}
+                        candidatNom={candidat.nomcan}
+                        candidatPrenom={candidat.prncan}
+                        concoursId={candidat.concours_id}
+                    />
+                ) : (
+                    <Card>
+                        <CardContent className="p-8 text-center text-muted-foreground">
+                            <p>Aucune donnée de note disponible</p>
+                        </CardContent>
+                    </Card>
+                )
             )}
         </div>
     );

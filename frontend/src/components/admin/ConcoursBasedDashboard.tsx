@@ -446,7 +446,7 @@ const ConcoursBasedDashboard = () => {
             <div className="flex items-center space-x-4">
                 <Button
                     variant="ghost"
-                    onClick={() => setSelectedConcours(null)} // Réinitialise l'état pour revenir à la liste
+                    onClick={() => setSelectedConcours(null)} 
                 >
                     <ArrowLeft className="h-4 w-4 mr-2"/>
                     Retour aux concours

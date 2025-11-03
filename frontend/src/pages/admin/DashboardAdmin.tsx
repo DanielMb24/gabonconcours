@@ -121,7 +121,7 @@ const [exportModalOpen, setExportModalOpen] = useState(false);
 
     const unreadCount = messages?.filter((m) => m.statut === 'non_lu' && m.expediteur === 'candidat').length || 0;
 
-    // ✅ Placer le useQuery ICI, à l’intérieur du composant
+    
     const { data: stats = defaultStats, isLoading: statsLoading } = useQuery<DashboardStats>({
         queryKey: ['admin-stats'],
         queryFn: async () => {
@@ -292,7 +292,7 @@ const [exportModalOpen, setExportModalOpen] = useState(false);
   <Button
     variant="outline"
     size="sm"
-    onClick={() => setExportModalOpen(true)} // ✅ ouvre la modale
+    onClick={() => setExportModalOpen(true)} 
   >
     <Download className="h-4 w-4 mr-2" />
     Exporter

@@ -43,6 +43,9 @@ export interface AdminLog {
     created_at: string;
     admin_nom?: string;
     admin_prenom?: string;
+    admin_email?: string;
+    admin_role?: string;
+    admin_admin_role?: string;
 }
 
 export interface CreateAdminRequest {
@@ -51,7 +54,7 @@ export interface CreateAdminRequest {
     email: string;
     etablissement_id?: number;
     role: 'admin_etablissement' |  'sub_admin';
-
+    admin_role?: 'notes' | 'documents';
 }
 
 export interface PasswordResetRequest {

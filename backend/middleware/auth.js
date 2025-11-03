@@ -28,7 +28,8 @@ const authenticateToken = (req, res, next) => {
             etablissement_id: decoded.etablissement_id || null,
             nom: decoded.nom,
             prenom: decoded.prenom,
-            email: decoded.email
+            email: decoded.email,
+            admin_role: decoded.admin_role || 'notes'  
         };
 
         console.log('Auth: Admin authentifié', req.admin.email);

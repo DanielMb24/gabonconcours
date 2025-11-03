@@ -27,6 +27,10 @@ class Admin {
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
+        if(filters.admin_role){
+            conditions.push('a.admin_role = ?');
+            values.push(filters.admin_role);
+        }
 
         query += ' ORDER BY a.created_at DESC';
 

@@ -7,22 +7,22 @@ interface Admin {
     nom: string;
     prenom: string;
     email: string;
-    role: 'super_admin' | 'admin_etablissement'| 'sub_admin';
     admin_role : 'notes' | 'documents';
+    role: 'super_admin' | 'admin_etablissement'| 'sub_admin';
     etablissement_id?: number;
     etablissement_nom?: string;
 }
 
 interface AdminAuthContextType {
     admin: Admin | null;
-    setAdmin: React.Dispatch<React.SetStateAction<Admin | null>>; // ✅ AJOUT
+    setAdmin: React.Dispatch<React.SetStateAction<Admin | null>>; 
     token: string | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     isAuthenticated: boolean;
     isSuperAdmin: boolean;
-}
+} 
 
 const BASE_URL = 'http://localhost:3001/api/admin';
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -91,7 +91,7 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         <AdminAuthContext.Provider
             value={{
                 admin,
-                setAdmin, // ✅ Ajouté ici aussi
+                setAdmin, 
                 token,
                 isLoading,
                 login,

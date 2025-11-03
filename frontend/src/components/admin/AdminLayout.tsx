@@ -53,7 +53,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
                 { path: '/admin/concours', label: 'Concours', icon: Trophy },
                 { path: '/admin/messagerie', label: 'Messages', icon: Settings },
                 { path: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
-                { path: '/admin/sub-admins', label: 'Sous-Admins', icon: UserCog },
+                { path: '/admin/sous-admins', label: 'Sous-Admins', icon: UserCog },
                 { path: '/admin/profile', label: 'Profil', icon: Settings }
             ];
         }
@@ -62,7 +62,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
         if (admin?.role === 'sub_admin' && admin?.admin_role === 'notes') {
             return [
                 ...baseItems,
-                { path: '/admin/notes', label: 'Gestion des Notes', icon: GraduationCap },
+                { path: '/admin/concours', label: 'Concours', icon: GraduationCap },
                 { path: '/admin/profile', label: 'Profil', icon: Settings }
             ];
         }
@@ -71,7 +71,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
         if (admin?.role === 'sub_admin' && admin?.admin_role === 'documents') {
             return [
                 ...baseItems,
-                { path: '/admin/dossiers', label: 'Gestion des Documents', icon: FileText },
+                { path: '/admin/concours', label: 'Concours', icon: GraduationCap },
                 { path: '/admin/profile', label: 'Profil', icon: Settings }
             ];
         }

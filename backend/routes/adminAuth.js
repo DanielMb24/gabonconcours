@@ -40,7 +40,8 @@ router.post('/login', async (req, res) => {
                 etablissement_id: admin.etablissement_id,
                 nom: admin.nom,
                 prenom: admin.prenom,
-                email: admin.email
+                email: admin.email,
+                admin_role: admin.admin_role
             },
             process.env.JWT_SECRET || 'your_jwt_secret_key_here',
             {expiresIn: '24h'}
@@ -55,6 +56,7 @@ router.post('/login', async (req, res) => {
                     prenom: admin.prenom,
                     email: admin.email,
                     role: admin.role,
+                    admin_role: admin.admin_role,
                     etablissement_id: admin.etablissement_id,
                     etablissement_nom: admin.etablissement_nom
                 },
