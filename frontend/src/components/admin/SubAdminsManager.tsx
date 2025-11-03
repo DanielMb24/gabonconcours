@@ -39,10 +39,13 @@ const SubAdminsManager: React.FC = () => {
       const response = await subAdminService.create(newAdmin);
       return response.data;
     },
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Sous-admin ajouté !" });
+    onSuccess: (data) => {
+      toast({ 
+        title: "Succès", 
+        description: "Sous-admin créé ! Un email avec les identifiants a été envoyé." 
+      });
       queryClient.invalidateQueries({ queryKey: ["subAdmins", form.etablissement_id] });
-      setForm({ ...form, nom: "", prenom: "", email: "", password: "", admin_role: "notes" });
+      setForm({ ...form, nom: "", prenom: "", email: "", admin_role: "notes" });
     },
     onError: (error: any) => {
       const message = error.response?.data?.message || "Impossible d’ajouter le sous-admin.";
@@ -70,11 +73,12 @@ const SubAdminsManager: React.FC = () => {
   };
 
   const handleCreate = () => {
-    const { nom, prenom, email, password, admin_role } = form;
-    if (!nom || !prenom || !email || !password || !admin_role) {
-      toast({ title: "Erreur", description: "Tous les champs sont requis." });
+    const { nom, prenom, email, admin_role } = form;
+    if (!nom || !prenom || !email || !admin_role) {
+      toast({ title: "Erreur", description: "Les champs nom, prénom, email et rôle sont requis." });
       return;
     }
+    // Le mot de passe est généré automatiquement côté backend
     createSubAdminMutation.mutate(form);
   };
 
@@ -89,11 +93,12 @@ const SubAdminsManager: React.FC = () => {
         </CardHeader>
         <CardContent>
           {/* --- FORMULAIRE --- */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <Input name="nom" placeholder="Nom" value={form.nom} onChange={handleChange} />
-            <Input name="prenom" placeholder="Prénom" value={form.prenom} onChange={handleChange} />
-            <Input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
-            <Input name="password" placeholder="Mot de passe" type="password" value={form.password} onChange={handleChange} />
+          <div className="space-y-4 mb-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Input name="nom" placeholder="Nom" value={form.nom} onChange={handleChange} />
+              <Input name="prenom" placeholder="Prénom" value={form.prenom} onChange={handleChange} />
+            </div>
+            <Input name="email" placeholder="Email" type="email" value={form.email} onChange={handleChange} />
             <Select
                 value={form.admin_role}
                 onValueChange={(value) => setForm({ ...form, admin_role: value as "notes" | "documents" })}
@@ -102,10 +107,13 @@ const SubAdminsManager: React.FC = () => {
                 <SelectValue placeholder="Choisir un rôle" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="notes">Notes</SelectItem>
-                <SelectItem value="documents">Documents</SelectItem>
+                <SelectItem value="notes">Gestion des Notes</SelectItem>
+                <SelectItem value="documents">Validation des Documents</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              ℹ️ Un mot de passe temporaire sera généré automatiquement et envoyé par email.
+            </p>
           </div>
 
           <Button onClick={handleCreate} disabled={createSubAdminMutation.isPending}>
