@@ -16,14 +16,32 @@ const SuccesContinue = () => {
 
     const decodedNupcan = decodeURIComponent(numeroCandidature || '');
 
-    useEffect(() => {
-        if (decodedNupcan) {
-            loadCandidature(decodedNupcan).catch((err) => {
+  useEffect(() => {
+    if (decodedNupcan) {
+        loadCandidature(decodedNupcan)
+            .then((data) => {
+                // Vérification du paiement
+                const paiement = data?.paiement || data?.paiement;
+                const montant = parseFloat(data?.concours?.fracnc || '0');
+                const isGratuit = montant === 0;
+
+                if (!isGratuit) {
+                    if (!paiement || paiement.status !== 'success') {
+                        toast({
+                            title: "Paiement requis",
+                            description: "Veuillez effectuer le paiement avant de finaliser votre candidature.",
+                            variant: "destructive",
+                        });
+                        navigate(`/paiement/${encodeURIComponent(decodedNupcan)}`);
+                    }
+                }
+            })
+            .catch((err) => {
                 console.error("Erreur lors du chargement:", err);
                 navigate('/connexion');
             });
-        }
-    }, [decodedNupcan, loadCandidature, navigate]);
+    }
+}, [decodedNupcan, loadCandidature, navigate]);
 
     const handleRetourStatut = () => {
         navigate(`/dashboard/${encodeURIComponent(decodedNupcan)}`);

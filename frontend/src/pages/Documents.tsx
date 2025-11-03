@@ -85,7 +85,7 @@ const Documents = () => {
                 description: `Les documents ont été uploadés.`,
             });
             setTimeout(() => {
-                navigate(`/paiement/${encodeURIComponent(numeroCandidature!)}`);
+                navigate(`/succes/${encodeURIComponent(numeroCandidature!)}`);
             }, 1500); // Redirection plus rapide
         },
         onError: (error) => {
@@ -109,7 +109,7 @@ const Documents = () => {
                 description: 'Le fichier ne doit pas dépasser 5MB',
                 variant: 'destructive'
             });
-            return false;
+            return false; 
         }
 
         if (!allowedTypes.includes(file.type)) {

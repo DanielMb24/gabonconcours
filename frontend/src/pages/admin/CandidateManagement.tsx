@@ -175,10 +175,13 @@ const CandidateManagement = () => {
     const concours = candidatureData.concours;
     const filiere = candidatureData.filiere;
     const paiement = candidatureData.paiement;
-// 🧩 Détermination des onglets selon le rôle
-const role = admin?.admin_role || '';
-const showDocuments = role === 'documents' ;
-const showNotes = role === 'notes';
+
+const admin_role = admin?.admin_role || '';
+const role = admin?.role || '';
+
+const isFullAdmin = role === 'admin_etablissement';
+const showDocuments = isFullAdmin || admin_role === 'documents';
+const showNotes = isFullAdmin || admin_role === 'notes';
 
     return (
         <div className="space-y-6">
@@ -219,32 +222,34 @@ const showNotes = role === 'notes';
                         Vue d'ensemble
                     </button>
 
-                    {showDocuments && (
-                        <button
-                            onClick={() => setActiveTab('documents')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'documents'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        >
-                            Documents
-                        </button>
-                    )}
+                   {showDocuments && (
+    <button
+        onClick={() => setActiveTab('documents')}
+        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'documents'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+        }`}
+    >
+        Documents
+    </button>
+)}
 
-                    {showNotes && (
-                        <button
-                            onClick={() => setActiveTab('notes')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'notes'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        >
-                            Notes
-                        </button>
-                    )}
+{showNotes && (
+    <button
+        onClick={() => setActiveTab('notes')}
+        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'notes'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+        }`}
+    >
+        Notes
+    </button>
+)}
+
                 </nav>
+
             </div>
 
             {/* Contenu selon l'onglet actif */}
@@ -416,35 +421,35 @@ const showNotes = role === 'notes';
 
            
 
-           {activeTab === 'documents' && showDocuments && (
-                <CandidateDocumentManager
-                    candidatNupcan={nupcan!}
-                    candidatInfo={{
-                        nom: candidat.nomcan,
-                        prenom: candidat.prncan,
-                        email: candidat.maican
-                    }}
-                    onDocumentValidated={() => refetch()}
-                />
-            )}
+       {activeTab === 'documents' && showDocuments && (
+    <CandidateDocumentManager
+        candidatNupcan={nupcan!}
+        candidatInfo={{
+            nom: candidat.nomcan,
+            prenom: candidat.prncan,
+            email: candidat.maican
+        }}
+        onDocumentValidated={() => refetch()}
+    />
+)}
 
-            {/* Gestion des notes */}
-            {activeTab === 'notes' && showNotes && (
-                (candidat.id && candidat.concours_id) ? (
-                    <NotesManager
-                        candidatId={candidat.id}
-                        candidatNom={candidat.nomcan}
-                        candidatPrenom={candidat.prncan}
-                        concoursId={candidat.concours_id}
-                    />
-                ) : (
-                    <Card>
-                        <CardContent className="p-8 text-center text-muted-foreground">
-                            <p>Aucune donnée de note disponible</p>
-                        </CardContent>
-                    </Card>
-                )
-            )}
+{activeTab === 'notes' && showNotes && (
+    (candidat.id && candidat.concours_id) ? (
+        <NotesManager
+            candidatId={candidat.id}
+            candidatNom={candidat.nomcan}
+            candidatPrenom={candidat.prncan}
+            concoursId={candidat.concours_id}
+        />
+    ) : (
+        <Card>
+            <CardContent className="p-8 text-center text-muted-foreground">
+                <p>Aucune donnée de note disponible</p>
+            </CardContent>
+        </Card>
+    )
+)}
+
         </div>
     );
 };
