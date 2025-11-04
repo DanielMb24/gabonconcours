@@ -23,8 +23,8 @@ const Header: React.FC = () => {
 
     const navItems = [
         { label: t('home') || 'Accueil', icon: Home, path: '/' },
-        { label: t('concours') || 'Concours', icon: BookOpen, path: '/concours' },
-        { label: 'À propos', icon: GraduationCap, path: '/about' },
+        { label: t('contests') || 'Concours', icon: BookOpen, path: '/concours' },
+        { label: t('about') || 'À propos', icon: GraduationCap, path: '/about' },
         { label: t('contact') || 'Contact', icon: Phone, path: '/support' },
     ];
 
