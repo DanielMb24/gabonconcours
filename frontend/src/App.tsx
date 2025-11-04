@@ -56,6 +56,8 @@ import SuperAdminStatistics from "@/pages/admin/SuperAdminStatistics.tsx";
 import SuperAdminSupport from "@/pages/admin/SuperAdminSupport.tsx";
 import GestionSousAdmins from "@/pages/admin/GestionSousAdmins.tsx";
 import Logs from "@/pages/admin/Logs.tsx";
+import NewHomePage from './pages/NewHomePage';
+import LoginCandidat from './pages/candidat/LoginCandidat';
 
 
 const queryClient = new QueryClient({
@@ -86,7 +88,7 @@ function App() {
                     <Router>
                     <Routes>
                         {/* Routes publiques */}
-                        <Route path="/" element={<NewIndex/>}/>
+                        <Route path="/" element={<NewHomePage/>}/>
                         <Route path="/about" element={<APropos/>}/>
 
                         <Route path="/support" element={<Support/>}/>
@@ -113,7 +115,7 @@ function App() {
                         <Route path="/dashboard/:nupcan" element={<DashboardCandidat/>}/>
                         <Route path="/candidat/dashboard" element={<CandidatDashboard/>}/>
                         <Route path="/recap/:nupcan" element={<RecapPaiement/>}/>
-                        <Route path="/connexion" element={<Connexion/>}/>
+                        <Route path="/connexion" element={<LoginCandidat/>}/>
 
 
                         {/* Routes admin */}

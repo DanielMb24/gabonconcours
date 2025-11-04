@@ -171,6 +171,9 @@ app.use('/api/exports', exportRoutes);
 app.use('/api/admin/management', adminManagementRoutes);
 app.use('/api/documents-extended', documentsExtendedRoutes);
 app.use('/api/user-roles', userRolesRoutes);
+app.use('/api/logs', require('./routes/logs'));
+app.use('/api/sous-admins', require('./routes/sousAdmins'));
+app.use('/api/export', exportRoutes);
 
 // Importer les fonctions de base de données
 const {createConnection, testConnection} = require('./config/database');

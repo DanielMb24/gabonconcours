@@ -48,8 +48,8 @@ router.get('/', async (req, res) => {
         const [candidatsStats] = await connection.execute(`
             SELECT 
                 COUNT(*) AS total,
-                SUM(CASE WHEN statut_candidature = 'en_attente' THEN 1 ELSE 0 END) AS en_attente,
-                SUM(CASE WHEN statut_candidature = 'valide' THEN 1 ELSE 0 END) AS valides
+                SUM(CASE WHEN statut = 'en_attente' THEN 1 ELSE 0 END) AS en_attente,
+                SUM(CASE WHEN statut = 'valide' THEN 1 ELSE 0 END) AS valides
             FROM candidats
         `);
 
