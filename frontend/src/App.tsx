@@ -58,6 +58,10 @@ import GestionSousAdmins from "@/pages/admin/GestionSousAdmins.tsx";
 import Logs from "@/pages/admin/Logs.tsx";
 import NewHomePage from './pages/NewHomePage';
 import LoginCandidat from './pages/candidat/LoginCandidat';
+import StatistiquesPage from './pages/admin/StatistiquesPage';
+import LogsPage from './pages/admin/LogsPage';
+import GestionConcoursFilieresPage from './pages/admin/GestionConcoursFilieresPage';
+import APropos from './pages/APropos';
 
 
 const queryClient = new QueryClient({
@@ -90,6 +94,7 @@ function App() {
                         {/* Routes publiques */}
                         <Route path="/" element={<NewHomePage/>}/>
                         <Route path="/about" element={<APropos/>}/>
+                        <Route path="/a-propos" element={<APropos/>}/>
 
                         <Route path="/support" element={<Support/>}/>
                         <Route path="/concours" element={<Concours/>}/>
@@ -184,12 +189,17 @@ function App() {
                             }/>
                             <Route path="logs" element={
                                 <SuperAdminRoute>
-                                    <Logs/>
+                                    <LogsPage/>
                                 </SuperAdminRoute>
                             }/>
                             <Route path="statistiques" element={
                                 <SuperAdminRoute>
-                                    <SuperAdminStatistics/>
+                                    <StatistiquesPage/>
+                                </SuperAdminRoute>
+                            }/>
+                            <Route path="concours-filieres-management" element={
+                                <SuperAdminRoute>
+                                    <GestionConcoursFilieresPage/>
                                 </SuperAdminRoute>
                             }/>
                             <Route path="support" element={

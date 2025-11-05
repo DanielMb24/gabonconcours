@@ -174,6 +174,10 @@ app.use('/api/user-roles', userRolesRoutes);
 app.use('/api/logs', require('./routes/logs'));
 app.use('/api/sous-admins', require('./routes/sousAdmins'));
 app.use('/api/export', exportRoutes);
+app.use('/api/statistics', require('./routes/statistics-global'));
+const { router: notificationsRouter } = require('./routes/notifications-system');
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/messaging', require('./routes/messaging-enhanced'));
 
 // Importer les fonctions de base de données
 const {createConnection, testConnection} = require('./config/database');
