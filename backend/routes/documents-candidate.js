@@ -70,7 +70,7 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
 
         const document = documents[0];
 
-        // ✅ Vérifier que seuls les documents rejetés peuvent être remplacés
+        //  Vérifier que seuls les documents rejetés peuvent être remplacés
         if (document.statut !== 'rejete') {
             fs.unlinkSync(file.path);
             return res.status(400).json({

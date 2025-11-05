@@ -6,7 +6,7 @@ import {LanguageProvider} from '@/contexts/LanguageContext';
 
 // Pages publiques
 import NewIndex from '@/pages/NewIndex';
-import APropos from '@/pages/Index';
+
 
 import Concours from '@/pages/Concours';
 import Candidature from '@/pages/Candidature';
@@ -93,8 +93,8 @@ function App() {
                     <Routes>
                         {/* Routes publiques */}
                         <Route path="/" element={<NewHomePage/>}/>
+                 
                         <Route path="/about" element={<APropos/>}/>
-                        <Route path="/a-propos" element={<APropos/>}/>
 
                         <Route path="/support" element={<Support/>}/>
                         <Route path="/concours" element={<Concours/>}/>

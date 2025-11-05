@@ -22,9 +22,9 @@ const Header: React.FC = () => {
     const navigate = useNavigate();
 
     const navItems = [
-        { label: t('home') || 'Accueil', icon: Home, path: '/' },
-        { label: t('contests') || 'Concours', icon: BookOpen, path: '/concours' },
-        { label: t('about') || 'À propos', icon: GraduationCap, path: '/about' },
+        { label: t('Accueil') || 'Accueil', icon: Home, path: '/' },
+        { label: t('Concours') || 'Concours', icon: BookOpen, path: '/concours' },
+        { label: t('A propos') || 'À propos', icon: GraduationCap, path: '/about' },
         { label: t('contact') || 'Contact', icon: Phone, path: '/support' },
     ];
 

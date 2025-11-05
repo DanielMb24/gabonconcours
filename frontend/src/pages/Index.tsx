@@ -147,7 +147,7 @@ const APropos = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: i * 0.1 }}
           whileHover={{ y: -8 }}
-          className="group" // Ajouté ici
+          className="group"
         >
           <Card className="h-full p-8 bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-0">
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">

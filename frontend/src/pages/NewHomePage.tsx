@@ -232,24 +232,43 @@ const NewHomePage = () => {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.4 }}
-              className="relative flex justify-center"
-            >
-              <motion.div
-                animate={controls}
-                className="relative w-96 h-96"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-3xl animate-pulse" />
-                <div className="relative w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-12 shadow-2xl backdrop-blur-md border border-white/20 flex items-center justify-center">
-                  <GraduationCap className="w-48 h-48 text-primary/50" />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
-                </div>
-              </motion.div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-bounce" />
-              <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-bounce" style={{ animationDelay: '1s' }} />
-            </motion.div>
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 1, delay: 0.4 }}
+  className="relative flex justify-center"
+>
+  <motion.div
+    animate={controls}
+    className="relative w-96 h-96"
+  >
+    {/* Halo lumineux animé */}
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-3xl animate-pulse" />
+
+    {/* Conteneur principal avec effets visuels */}
+    <div className="relative w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-12 shadow-2xl backdrop-blur-md border border-white/20 flex items-center justify-center overflow-hidden">
+      {/* Image  */}
+      <motion.img
+        src="/université.png"
+        alt="student illustration"
+        className="w-full h-full object-contain rounded-2xl"
+        initial={{ scale: 1 }}
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Lueur subtile au-dessus */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
+    </div>
+  </motion.div>
+
+  {/* Bulles lumineuses d’arrière-plan */}
+  <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-bounce" />
+  <div
+    className="absolute -bottom-8 -left-8 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-bounce"
+    style={{ animationDelay: "1s" }}
+  />
+</motion.div>
+
           </div>
         </div>
       </section>
