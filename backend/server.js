@@ -127,6 +127,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/etudiants', etudiantsRoutes);
 app.use('/api/documents', documentsRoutes);
 app.use('/api/documents-enhanced', require('./routes/documents-enhanced'));
+app.use('/api/messaging-realtime', require('./routes/messaging-realtime'));
 app.use('/api/paiements', paiementsRoutes);
 app.use('/api/documentvalidation', documentValidationRoutes);
 app.use('/api/document-validation', documentValidationRoutes); // Alias avec tiret
