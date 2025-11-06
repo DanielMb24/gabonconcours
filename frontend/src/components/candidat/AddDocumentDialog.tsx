@@ -71,7 +71,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
             formData.append('nomdoc', nomdoc);
             formData.append('type', file.type.includes('pdf') ? 'pdf' : 'image');
 
-            const response = await apiService.makeRequest(
+            const response = await apiService.makeFormDataRequest(
                 '/documents/candidate/add',
                 'POST',
                 formData
@@ -83,7 +83,6 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
                     description: 'Votre document a été ajouté avec succès et est en attente de validation'
                 });
 
-                // Reset form
                 setFile(null);
                 setNomdoc('');
                 onOpenChange(false);

@@ -33,7 +33,7 @@ const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
     const replaceMutation = useMutation({
         mutationFn: async (file: File) => {
             const formData = new FormData();
-            formData.append('document', file);
+            formData.append('file', file);
             formData.append('nupcan', nupcan);
             formData.append('type', document.type || 'AUTRE');
             formData.append('nomdoc', document.nomdoc);
@@ -61,8 +61,7 @@ const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
-            
-            // Vérifier la taille du fichier (max 5MB)
+
             if (file.size > 5 * 1024 * 1024) {
                 toast({
                     title: 'Fichier trop volumineux',
@@ -72,7 +71,6 @@ const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
                 return;
             }
 
-            // Vérifier le type de fichier
             const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
             if (!allowedTypes.includes(file.type)) {
                 toast({
