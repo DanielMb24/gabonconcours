@@ -22,6 +22,12 @@ interface AddDocumentDialogProps {
     currentTotal: number;
 }
 
+interface UploadedDoc {
+    file: File;
+    nomdoc: string;
+    type: 'pdf' | 'image';
+}
+
 const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
     open,
     onOpenChange,
@@ -37,7 +43,28 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            // Validation type et taille
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                toast({
+                    title: 'Format non supporté',
+                    description: 'Seuls les fichiers PDF, JPG, JPEG et PNG sont acceptés',
+                    variant: 'destructive'
+                });
+                return;
+            }
+            if (selectedFile.size > maxSize) {
+                toast({
+                    title: 'Fichier trop volumineux',
+                    description: 'Le fichier ne doit pas dépasser 10MB',
+                    variant: 'destructive'
+                });
+                return;
+            }
+
+            setFile(selectedFile);
         }
     };
 
@@ -66,9 +93,9 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
 
         try {
             const formData = new FormData();
-            formData.append('file', file);
             formData.append('nupcan', nupcan);
             formData.append('nomdoc', nomdoc);
+            formData.append('file', file);
             formData.append('type', file.type.includes('pdf') ? 'pdf' : 'image');
 
             const response = await apiService.makeFormDataRequest(
@@ -86,7 +113,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
                 setFile(null);
                 setNomdoc('');
                 onOpenChange(false);
-                
+
                 if (onSuccess) onSuccess();
             } else {
                 throw new Error(response.message || 'Erreur lors de l\'ajout');
@@ -107,7 +134,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle>Ajouter un document supplémentaire</DialogTitle>
+                    <DialogTitle>Ajouter un document</DialogTitle>
                     <DialogDescription>
                         Vous pouvez ajouter jusqu'à 6 documents au total. 
                         {remainingSlots > 0 ? (

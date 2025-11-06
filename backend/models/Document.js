@@ -204,7 +204,7 @@ class Document {
             `SELECT COUNT(*) as total 
              FROM documents d
              JOIN dossiers dos ON d.id = dos.document_id
-             WHERE dos.nupcan = ?`,
+             WHERE dos.nipcan = ?`,
             [nupcan]
         );
         return rows[0].total;

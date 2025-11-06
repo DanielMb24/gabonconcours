@@ -61,6 +61,7 @@
         import GradesBulletin from "@/components/candidat/GradesBulletin.tsx";
         import CandidatDashboard from "./CandidatDashboard";
     import  {Modal,ModalContent} from "@/components/ui/modal";
+import AddDocumentDialog from '@/components/candidat/AddDocumentDialog.tsx';
 
 
         const DashboardCandidat = () => {
@@ -75,6 +76,7 @@ const [showAlert, setShowAlert] = useState(false);
             const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'notes'>('overview');
             const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
             const [documentToReplace, setDocumentToReplace] = useState<any | null>(null);
+const [isAddDocOpen, setIsAddDocOpen] = useState(false);
 
             const handleReplaceDocument = (doc: any) => {
                 setDocumentToReplace(doc);
@@ -754,7 +756,7 @@ const TelechargerRecu = async () => {
                                         <FileCheck className="h-5 w-5 mr-2" />
                                         Mes Documents ({documents?.length || 0})
                                     </CardTitle>
-                                    <DocumentUploadForm onDocumentsAdd={handleDocumentAdd} existingDocuments={documents} />
+                              
                                 </div>
                             </CardHeader>
 
@@ -843,10 +845,28 @@ const TelechargerRecu = async () => {
     />
 )}
 
-                                        {/* Carte “+ Ajouter un document” */}
-                                        <Card className="flex items-center justify-center p-4 border-dashed border-2 border-primary cursor-pointer hover:bg-primary/5">
-                                            <DocumentUploadForm onDocumentsAdd={handleDocumentAdd} existingDocuments={documents} />
-                                        </Card>
+                                      {/* Carte “+ Ajouter un document” */}
+<Card
+    className="flex items-center justify-center p-4 border-dashed border-2 border-primary cursor-pointer hover:bg-primary/5"
+    onClick={() => setIsAddDocOpen(true)}
+>
+    <p className="text-primary font-medium">+ Ajouter un document</p>
+</Card>
+
+<AddDocumentDialog
+    open={isAddDocOpen}
+    onOpenChange={setIsAddDocOpen}
+    nupcan={nupcan!}       // Assure-toi que nupcan est défini
+    currentTotal={documents.length}
+    onSuccess={async () => {
+        toast({
+            title: 'Documents ajoutés',
+            description: 'Votre document a été ajouté avec succès',
+        });
+        await refetch();  // Rafraîchit la liste des documents
+    }}
+/>
+
                                     </div>
                                 ) : (
                                     // Aucun document

@@ -134,7 +134,7 @@ router.post('/add', upload.single('file'), async (req, res) => {
         const connection = getConnection();
         const { nupcan, nomdoc, type } = req.body;
         const file = req.file;
-
+const nipcan = nupcan; // Correction possible du paramètre
         if (!file || !nupcan || !nomdoc) {
             if (file) fs.unlinkSync(file.path);
             return res.status(400).json({
@@ -172,9 +172,9 @@ router.post('/add', upload.single('file'), async (req, res) => {
             
             // Créer l'entrée dans dossiers
             await connection.execute(
-                `INSERT INTO dossiers (candidat_id, concours_id, document_id, nupcan, created_at)
+                `INSERT INTO dossiers (candidat_id, concours_id, document_id, nipcan, created_at)
                  VALUES (?, ?, ?, ?, NOW())`,
-                [candidat.id, candidat.concours_id, doc.id, nupcan]
+                [candidat.id, candidat.concours_id, doc.id, nipcan]
             );
         }
 
@@ -199,11 +199,11 @@ router.post('/add', upload.single('file'), async (req, res) => {
 });
 
 // ✅ Vérifier si le candidat peut ajouter un document
-router.get('/can-add/:nupcan', async (req, res) => {
+router.get('/can-add/:nipcan', async (req, res) => {
     try {
-        const { nupcan } = req.params;
-        const canAdd = await Document.canAddDocument(nupcan);
-        const total = await Document.countByNupcan(nupcan);
+        const { nipcan } = req.params;
+        const canAdd = await Document.canAddDocument(nipcan);
+        const total = await Document.countByNupcan(nipcan);
 
         res.json({
             success: true,
