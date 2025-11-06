@@ -17,10 +17,11 @@ import { documentService } from '@/services/documentService';
 interface DocumentReplaceDialogProps {
     document: any;
     open: boolean;
-    onClose: () => void;         // pour fermer la dialog
-    nupcan: string;              // obligatoire
-    onUpdated?: () => Promise<void>; // optionnel
+    onClose: () => void;
+    nupcan: string;
+    onUpdated?: () => Promise<void>;
 }
+
 const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
     document,
     open,
@@ -28,32 +29,23 @@ const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
     nupcan,
     onUpdated,
 }) => {
-
     const queryClient = useQueryClient();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const replaceMutation = useMutation({
-        mutationFn: async (file: File) => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('nupcan', nupcan);
-            formData.append('type', document.type || 'AUTRE');
-            formData.append('nomdoc', document.nomdoc);
-
+        mutationFn: async (formData: FormData) => {
             return await documentService.replaceDocument(document.id, formData);
         },
-     onSuccess: async () => {
-    toast({
-        title: 'Document remplacé',
-        description: 'Votre nouveau document a été téléchargé et est en attente de validation',
-    });
-    queryClient.invalidateQueries({ queryKey: ['candidature-complete', nupcan] });
-    if (onUpdated) await onUpdated(); // ✅ appel optionnel
-    onClose(); // ferme la dialog
-    setSelectedFile(null);
-},
-
-
+        onSuccess: async () => {
+            toast({
+                title: 'Document remplacé',
+                description: 'Votre nouveau document a été téléchargé et est en attente de validation',
+            });
+            queryClient.invalidateQueries({ queryKey: ['candidature-complete', nupcan] });
+            if (onUpdated) await onUpdated();
+            onClose();
+            setSelectedFile(null);
+        },
         onError: (error: any) => {
             toast({
                 title: 'Erreur',
@@ -102,7 +94,19 @@ const DocumentReplaceDialog: React.FC<DocumentReplaceDialogProps> = ({
             return;
         }
 
-        replaceMutation.mutate(selectedFile);
+        // Déterminer le type automatiquement selon l'extension
+        const ext = selectedFile.name.split('.').pop()?.toLowerCase();
+        let newType = 'AUTRE';
+        if (ext === 'pdf') newType = 'pdf';
+        else if (['jpg', 'jpeg', 'png'].includes(ext)) newType = 'image';
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('nupcan', nupcan);
+        formData.append('type', newType);
+        formData.append('nomdoc', document.nomdoc);
+
+        replaceMutation.mutate(formData);
     };
 
     return (

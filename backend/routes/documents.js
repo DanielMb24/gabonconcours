@@ -106,76 +106,92 @@
     ===================================================== */
 
     // 🔁 Remplacer un document rejeté
-    router.put('/:id/replace', upload.single('file'), async (req, res) => {
-        try {
-            const { id } = req.params;
-            const file = req.file;
-            
-            console.log(`Remplacement document ${id}, fichier:`, file?.filename);
-            
-            if (!file) {
-                return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
-            }
+router.put('/:id/replace', upload.single('file'), async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
 
-            const doc = await Document.findById(id);
-            if (!doc) {
-                fs.unlinkSync(file.path);
-                return res.status(404).json({ success: false, message: 'Document introuvable' });
-            }
+    try {
+        const { id } = req.params;
+        const file = req.file;
+        let { nomdoc, type } = req.body;
 
-            if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
-                fs.unlinkSync(file.path);
-                return res.status(400).json({ 
-                    success: false, 
-                    message: 'Seuls les documents rejetés ou en attente peuvent être remplacés' 
-                });
-            }
+        if (!file) {
+            return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
+        }
 
-            // Supprimer l'ancien fichier
-            const oldPath = path.join(uploadDir, doc.nom_fichier);
-            if (fs.existsSync(oldPath)) {
-                try {
-                    fs.unlinkSync(oldPath);
-                    console.log(`✅ Ancien fichier supprimé: ${doc.nom_fichier}`);
-                } catch (err) {
-                    console.error('Erreur suppression ancien fichier:', err);
-                }
-            }
+        const connection = require('../config/database').getConnection();
+        const [rows] = await connection.execute('SELECT * FROM documents WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            return res.status(404).json({ success: false, message: 'Document introuvable' });
+        }
 
-            const newFileName = file.filename;
-            const updatedDoc = await Document.replace(id, newFileName);
-
-            console.log(`✅ Document ${id} remplacé avec succès`);
-            
-            // Return the full URL path for the document
-            const documentUrl = `/uploads/documents/${newFileName}`;
-            
-            res.json({ 
-                success: true, 
-                message: 'Document remplacé avec succès', 
-                data: {
-                    id: updatedDoc.id,
-                    nomdoc: updatedDoc.nomdoc,
-                    type: updatedDoc.type,
-                    statut: updatedDoc.statut,
-                    nom_fichier: updatedDoc.nom_fichier,
-                    url: documentUrl
-                }
-            });
-        } catch (error) {
-            console.error('❌ Erreur remplacement document:', error);
-            
-            // Nettoyer le fichier uploadé en cas d'erreur
-            if (req.file && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
-            
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Erreur serveur lors du remplacement' 
+        const doc = rows[0];
+        if (doc.statut !== 'rejete') {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            return res.status(400).json({
+                success: false,
+                message: 'Seuls les documents rejetés peuvent être remplacés.'
             });
         }
-    });
+
+        // Suppression de l'ancien fichier
+        const oldPath = path.join('uploads/documents', doc.nom_fichier || '');
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+
+        const newFileName = file.filename;
+        const newFilePath = path.join('uploads/documents', newFileName);
+
+        // 🔹 Calcul automatique du type selon l'extension si non fourni
+        if (!type) {
+            const ext = path.extname(file.originalname).toLowerCase();
+            if (ext === '.pdf') type = 'pdf';
+            else if (['.jpg', '.jpeg', '.png'].includes(ext)) type = 'image';
+            else type = 'AUTRE';
+        }
+
+        // 🔹 Mise à jour de la table documents
+        await connection.execute(
+            `
+            UPDATE documents
+            SET nomdoc = ?, nom_fichier = ?, type = ?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
+            WHERE id = ?
+            `,
+            [nomdoc || doc.nomdoc, newFileName, type, newFilePath, id]
+        );
+
+        // 🔹 Mise à jour du dossier associé (docdsr)
+        await connection.execute(
+            `
+            UPDATE dossiers
+            SET docdsr = ?
+            WHERE document_id = ?
+            `,
+            [newFilePath, id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Document et dossier mis à jour avec succès',
+            data: {
+                id,
+                nomdoc: nomdoc || doc.nomdoc,
+                nom_fichier: newFileName,
+                type: type,
+                docdsr: newFilePath,
+                statut: 'en_attente'
+            }
+        });
+
+    } catch (error) {
+        console.error('Erreur remplacement document:', error);
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        res.status(500).json({ success: false, message: 'Erreur serveur', errors: [error.message] });
+    }
+});
+
+
+
 
     /* =====================================================
     📥 TÉLÉCHARGEMENT DE DOCUMENT

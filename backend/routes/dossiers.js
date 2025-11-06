@@ -500,14 +500,15 @@ router.put('/documents/:id/replace', upload.single('file'), async (req, res) => 
         const newFilePath = path.join('uploads/documents', newFileName);
 
         // ✅ Mise à jour de la base de données (corrigée)
-        await connection.execute(
-            `
-            UPDATE documents
-            SET nomdoc = ?, nom_fichier = ?, type=?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
-            WHERE id = ?
-            `,
-            [nomdoc || doc.nomdoc, newFileName, newFilePath, id]
-        );
+     await connection.execute(
+    `
+    UPDATE documents
+    SET nomdoc = ?, nom_fichier = ?, type = ?, chemin_fichier = ?, statut = 'en_attente', updated_at = NOW()
+    WHERE id = ?
+    `,
+    [nomdoc || doc.nomdoc, newFileName, doc.type, newFilePath, id]
+);
+        console.log(`✅ Document ${id} remplacé avec succès dans la base de données.`);
 
         res.json({
             success: true,

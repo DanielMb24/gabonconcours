@@ -83,14 +83,16 @@ export const documentService = {
       console.log('Réponse remplacement:', response.data);
       const doc = response.data.data;
 
-      return {
-        id: doc.id?.toString() || id,
-        nomdoc: doc.nomdoc || '',
-        type: doc.type || '',
-        document_statut: doc.statut || 'en_attente',
-        url: doc.nom_fichier || doc.chemin_fichier || '',
-        taille: doc.taille || 0,
-      };
+     return {
+  id: doc.id?.toString() || id,
+  nomdoc: doc.nomdoc || '',
+  type: doc.type || '',
+  document_statut: doc.statut || doc.document_statut || 'en_attente',
+  url: doc.docdsr || doc.nom_fichier || doc.chemin_fichier || '',
+  taille: doc.taille || doc.taille_fichier || 0,
+  docdsr: doc.docdsr || '',
+};
+
     } catch (error: any) {
       console.error('Erreur lors du remplacement du document :', error);
       throw new Error(error.response?.data?.message || 'Échec du remplacement du document');
