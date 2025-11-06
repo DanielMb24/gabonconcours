@@ -4,7 +4,7 @@ const { getConnection } = require('../config/database');
 const nodemailer = require('nodemailer');
 
 // Configuration SMTP
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: process.env.SMTP_PORT || 587,
     secure: false,

@@ -825,24 +825,22 @@ const TelechargerRecu = async () => {
                                         })}
 
                                         {/* ---- Modal d’édition ---- */}
-                                        {selectedDocumentToEdit && (
-    <Modal open={true} onOpenChange={() => setSelectedDocumentToEdit(null)}>
-        <ModalContent>
-            <h2 className="text-xl font-semibold mb-4">Modifier le document</h2>
-            <DocumentEditForm
-                document={selectedDocumentToEdit}
-                onUpdated={() => {
-                    refetch();
-                    setSelectedDocumentToEdit(null);
-                    toast({
-                        title: 'Document mis à jour',
-                        description: 'Les informations du document ont été modifiées avec succès.'
-                    });
-                }}
-                onCancel={() => setSelectedDocumentToEdit(null)}
-            />
-        </ModalContent>
-    </Modal>
+
+                                       {selectedDocumentToEdit && (
+    <DocumentReplaceDialog
+        open={true}
+        document={selectedDocumentToEdit}
+          nupcan={documents.nupcan} 
+        onClose={() => setSelectedDocumentToEdit(null)}
+        onUpdated={async () => {
+            await refetch();
+            setSelectedDocumentToEdit(null);
+            toast({
+                title: 'Document mis à jour',
+                description: 'Le document a été remplacé avec succès.'
+            });
+        }}
+    />
 )}
 
                                         {/* Carte “+ Ajouter un document” */}

@@ -1,241 +1,241 @@
-const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
-const { getConnection } = require('../config/database');
-const Document = require('../models/Document');
+    const express = require('express');
+    const router = express.Router();
+    const multer = require('multer');
+    const fs = require('fs');
+    const path = require('path');
+    const { getConnection } = require('../config/database');
+    const Document = require('../models/Document');
 
-// 📂 Dossier de stockage
-const uploadDir = path.join(__dirname, '../uploads/documents');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    // 📂 Dossier de stockage
+    const uploadDir = path.join(__dirname, '../uploads/documents');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// ⚙️ Config multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, `doc-${uniqueSuffix}${path.extname(file.originalname)}`);
-    },
-});
-const upload = multer({ storage });
+    // ⚙️ Config multer
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => cb(null, uploadDir),
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, `doc-${uniqueSuffix}${path.extname(file.originalname)}`);
+        },
+    });
+    const upload = multer({ storage });
 
-/* =====================================================
-   🔹 ROUTES DOCUMENTS CRUD DE BASE
-===================================================== */
+    /* =====================================================
+    🔹 ROUTES DOCUMENTS CRUD DE BASE
+    ===================================================== */
 
-// ➕ Ajouter un document
-router.post('/', upload.single('file'), async (req, res) => {
-    try {
-        const { nomdoc, type } = req.body;
-        const file = req.file;
-        if (!file) return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
+    // ➕ Ajouter un document
+    router.post('/', upload.single('file'), async (req, res) => {
+        try {
+            const { nomdoc, type } = req.body;
+            const file = req.file;
+            if (!file) return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
 
-        const documentData = {
-            nomdoc: nomdoc || file.originalname,
-            type: type || file.mimetype.includes('pdf') ? 'pdf' : 'image',
-            nom_fichier: file.filename,
-            statut: 'en_attente'
-        };
+            const documentData = {
+                nomdoc: nomdoc || file.originalname,
+                type: type || file.mimetype.includes('pdf') ? 'pdf' : 'image',
+                nom_fichier: file.filename,
+                statut: 'en_attente'
+            };
 
-        const newDoc = await Document.create(documentData);
-        res.json({ success: true, message: 'Document créé', data: newDoc });
-    } catch (error) {
-        console.error('Erreur création document:', error);
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
-    }
-});
-
-// 📄 Récupérer tous les documents
-router.get('/', async (req, res) => {
-    try {
-        const documents = await Document.findAll();
-        res.json({ success: true, data: documents });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
-    }
-});
-
-// 📄 Récupérer un document par ID
-router.get('/:id', async (req, res) => {
-    try {
-        const doc = await Document.findById(req.params.id);
-        if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
-        res.json({ success: true, data: doc });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
-    }
-});
-
-/* =====================================================
-   ✏️ MODIFICATION ET STATUT
-===================================================== */
-
-// 🔄 Modifier les infos d’un document
-router.put('/:id', async (req, res) => {
-    try {
-        const { nomdoc, type, statut, commentaire } = req.body;
-        const doc = await Document.findById(req.params.id);
-        if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
-
-        const updated = await Document.updateStatus(req.params.id, statut || doc.statut, commentaire);
-        res.json({ success: true, message: 'Document mis à jour', data: updated });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Erreur mise à jour' });
-    }
-});
-
-// 🟢 Modifier uniquement le statut (admin)
-router.put('/:id/statut', async (req, res) => {
-    try {
-        const { statut, commentaire } = req.body;
-        if (!['en_attente', 'valide', 'rejete'].includes(statut)) {
-            return res.status(400).json({ success: false, message: 'Statut invalide' });
+            const newDoc = await Document.create(documentData);
+            res.json({ success: true, message: 'Document créé', data: newDoc });
+        } catch (error) {
+            console.error('Erreur création document:', error);
+            res.status(500).json({ success: false, message: 'Erreur serveur' });
         }
+    });
 
-        const updated = await Document.updateStatus(req.params.id, statut, commentaire);
-        res.json({ success: true, message: 'Statut modifié', data: updated });
-    } catch (error) {
-        console.error('Erreur update statut:', error);
-        res.status(500).json({ success: false, message: 'Erreur serveur' });
-    }
-});
-
-/* =====================================================
-   🧾 REMPLACEMENT DE DOCUMENT
-===================================================== */
-
-// 🔁 Remplacer un document rejeté
-router.put('/:id/replace', upload.single('file'), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const file = req.file;
-        
-        console.log(`Remplacement document ${id}, fichier:`, file?.filename);
-        
-        if (!file) {
-            return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
+    // 📄 Récupérer tous les documents
+    router.get('/', async (req, res) => {
+        try {
+            const documents = await Document.findAll();
+            res.json({ success: true, data: documents });
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Erreur serveur' });
         }
+    });
 
-        const doc = await Document.findById(id);
-        if (!doc) {
-            fs.unlinkSync(file.path);
-            return res.status(404).json({ success: false, message: 'Document introuvable' });
+    // 📄 Récupérer un document par ID
+    router.get('/:id', async (req, res) => {
+        try {
+            const doc = await Document.findById(req.params.id);
+            if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
+            res.json({ success: true, data: doc });
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Erreur serveur' });
         }
+    });
 
-        if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
-            fs.unlinkSync(file.path);
-            return res.status(400).json({ 
+    /* =====================================================
+    ✏️ MODIFICATION ET STATUT
+    ===================================================== */
+
+    // 🔄 Modifier les infos d’un document
+    router.put('/:id', async (req, res) => {
+        try {
+            const { nomdoc, type, statut, commentaire } = req.body;
+            const doc = await Document.findById(req.params.id);
+            if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
+
+            const updated = await Document.updateStatus(req.params.id, statut || doc.statut, commentaire);
+            res.json({ success: true, message: 'Document mis à jour', data: updated });
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Erreur mise à jour' });
+        }
+    });
+
+    // 🟢 Modifier uniquement le statut (admin)
+    router.put('/:id/statut', async (req, res) => {
+        try {
+            const { statut, commentaire } = req.body;
+            if (!['en_attente', 'valide', 'rejete'].includes(statut)) {
+                return res.status(400).json({ success: false, message: 'Statut invalide' });
+            }
+
+            const updated = await Document.updateStatus(req.params.id, statut, commentaire);
+            res.json({ success: true, message: 'Statut modifié', data: updated });
+        } catch (error) {
+            console.error('Erreur update statut:', error);
+            res.status(500).json({ success: false, message: 'Erreur serveur' });
+        }
+    });
+
+    /* =====================================================
+    🧾 REMPLACEMENT DE DOCUMENT
+    ===================================================== */
+
+    // 🔁 Remplacer un document rejeté
+    router.put('/:id/replace', upload.single('file'), async (req, res) => {
+        try {
+            const { id } = req.params;
+            const file = req.file;
+            
+            console.log(`Remplacement document ${id}, fichier:`, file?.filename);
+            
+            if (!file) {
+                return res.status(400).json({ success: false, message: 'Aucun fichier fourni' });
+            }
+
+            const doc = await Document.findById(id);
+            if (!doc) {
+                fs.unlinkSync(file.path);
+                return res.status(404).json({ success: false, message: 'Document introuvable' });
+            }
+
+            if (doc.statut !== 'rejete' && doc.statut !== 'en_attente') {
+                fs.unlinkSync(file.path);
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Seuls les documents rejetés ou en attente peuvent être remplacés' 
+                });
+            }
+
+            // Supprimer l'ancien fichier
+            const oldPath = path.join(uploadDir, doc.nom_fichier);
+            if (fs.existsSync(oldPath)) {
+                try {
+                    fs.unlinkSync(oldPath);
+                    console.log(`✅ Ancien fichier supprimé: ${doc.nom_fichier}`);
+                } catch (err) {
+                    console.error('Erreur suppression ancien fichier:', err);
+                }
+            }
+
+            const newFileName = file.filename;
+            const updatedDoc = await Document.replace(id, newFileName);
+
+            console.log(`✅ Document ${id} remplacé avec succès`);
+            
+            // Return the full URL path for the document
+            const documentUrl = `/uploads/documents/${newFileName}`;
+            
+            res.json({ 
+                success: true, 
+                message: 'Document remplacé avec succès', 
+                data: {
+                    id: updatedDoc.id,
+                    nomdoc: updatedDoc.nomdoc,
+                    type: updatedDoc.type,
+                    statut: updatedDoc.statut,
+                    nom_fichier: updatedDoc.nom_fichier,
+                    url: documentUrl
+                }
+            });
+        } catch (error) {
+            console.error('❌ Erreur remplacement document:', error);
+            
+            // Nettoyer le fichier uploadé en cas d'erreur
+            if (req.file && fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+            
+            res.status(500).json({ 
                 success: false, 
-                message: 'Seuls les documents rejetés ou en attente peuvent être remplacés' 
+                message: error.message || 'Erreur serveur lors du remplacement' 
             });
         }
+    });
 
-        // Supprimer l'ancien fichier
-        const oldPath = path.join(uploadDir, doc.nom_fichier);
-        if (fs.existsSync(oldPath)) {
-            try {
-                fs.unlinkSync(oldPath);
-                console.log(`✅ Ancien fichier supprimé: ${doc.nom_fichier}`);
-            } catch (err) {
-                console.error('Erreur suppression ancien fichier:', err);
+    /* =====================================================
+    📥 TÉLÉCHARGEMENT DE DOCUMENT
+    ===================================================== */
+
+    router.get('/:id/download', async (req, res) => {
+        try {
+            const doc = await Document.findById(req.params.id);
+            if (!doc) {
+                console.log(`Document ${req.params.id} introuvable en DB`);
+                return res.status(404).json({ success: false, message: 'Document introuvable' });
             }
-        }
 
-        const newFileName = file.filename;
-        const updatedDoc = await Document.replace(id, newFileName);
-
-        console.log(`✅ Document ${id} remplacé avec succès`);
-        
-        // Return the full URL path for the document
-        const documentUrl = `/uploads/documents/${newFileName}`;
-        
-        res.json({ 
-            success: true, 
-            message: 'Document remplacé avec succès', 
-            data: {
-                id: updatedDoc.id,
-                nomdoc: updatedDoc.nomdoc,
-                type: updatedDoc.type,
-                statut: updatedDoc.statut,
-                nom_fichier: updatedDoc.nom_fichier,
-                url: documentUrl
+            const filePath = path.join(uploadDir, doc.nom_fichier);
+            console.log(`Tentative de téléchargement: ${filePath}`);
+            
+            if (!fs.existsSync(filePath)) {
+                console.error(`Fichier physique non trouvé: ${filePath}`);
+                return res.status(404).json({ success: false, message: 'Fichier non trouvé' });
             }
-        });
-    } catch (error) {
-        console.error('❌ Erreur remplacement document:', error);
-        
-        // Nettoyer le fichier uploadé en cas d'erreur
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
+
+            // Définir le type MIME approprié
+            const ext = path.extname(doc.nom_fichier).toLowerCase();
+            let contentType = 'application/octet-stream';
+            if (ext === '.pdf') contentType = 'application/pdf';
+            else if (['.jpg', '.jpeg'].includes(ext)) contentType = 'image/jpeg';
+            else if (ext === '.png') contentType = 'image/png';
+
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', `inline; filename="${doc.nomdoc || doc.nom_fichier}"`);
+            
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.on('error', (err) => {
+                console.error('Erreur lecture fichier:', err);
+                res.status(500).json({ success: false, message: 'Erreur lecture fichier' });
+            });
+            fileStream.pipe(res);
+        } catch (error) {
+            console.error('Erreur téléchargement document:', error);
+            res.status(500).json({ success: false, message: 'Erreur lors du téléchargement' });
         }
-        
-        res.status(500).json({ 
-            success: false, 
-            message: error.message || 'Erreur serveur lors du remplacement' 
-        });
-    }
-});
+    });
 
-/* =====================================================
-   📥 TÉLÉCHARGEMENT DE DOCUMENT
-===================================================== */
+    /* =====================================================
+    ❌ SUPPRESSION
+    ===================================================== */
 
-router.get('/:id/download', async (req, res) => {
-    try {
-        const doc = await Document.findById(req.params.id);
-        if (!doc) {
-            console.log(`Document ${req.params.id} introuvable en DB`);
-            return res.status(404).json({ success: false, message: 'Document introuvable' });
+    router.delete('/:id', async (req, res) => {
+        try {
+            const doc = await Document.findById(req.params.id);
+            if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
+
+            const filePath = path.join(uploadDir, doc.nom_fichier);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+            await Document.deleteById(req.params.id);
+            res.json({ success: true, message: 'Document supprimé' });
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Erreur suppression' });
         }
+    });
 
-        const filePath = path.join(uploadDir, doc.nom_fichier);
-        console.log(`Tentative de téléchargement: ${filePath}`);
-        
-        if (!fs.existsSync(filePath)) {
-            console.error(`Fichier physique non trouvé: ${filePath}`);
-            return res.status(404).json({ success: false, message: 'Fichier non trouvé' });
-        }
-
-        // Définir le type MIME approprié
-        const ext = path.extname(doc.nom_fichier).toLowerCase();
-        let contentType = 'application/octet-stream';
-        if (ext === '.pdf') contentType = 'application/pdf';
-        else if (['.jpg', '.jpeg'].includes(ext)) contentType = 'image/jpeg';
-        else if (ext === '.png') contentType = 'image/png';
-
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Disposition', `inline; filename="${doc.nomdoc || doc.nom_fichier}"`);
-        
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.on('error', (err) => {
-            console.error('Erreur lecture fichier:', err);
-            res.status(500).json({ success: false, message: 'Erreur lecture fichier' });
-        });
-        fileStream.pipe(res);
-    } catch (error) {
-        console.error('Erreur téléchargement document:', error);
-        res.status(500).json({ success: false, message: 'Erreur lors du téléchargement' });
-    }
-});
-
-/* =====================================================
-   ❌ SUPPRESSION
-===================================================== */
-
-router.delete('/:id', async (req, res) => {
-    try {
-        const doc = await Document.findById(req.params.id);
-        if (!doc) return res.status(404).json({ success: false, message: 'Document introuvable' });
-
-        const filePath = path.join(uploadDir, doc.nom_fichier);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-
-        await Document.deleteById(req.params.id);
-        res.json({ success: true, message: 'Document supprimé' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Erreur suppression' });
-    }
-});
-
-module.exports = router;
+    module.exports = router;
