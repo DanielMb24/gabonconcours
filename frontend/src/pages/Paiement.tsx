@@ -70,7 +70,7 @@ const Paiement = () => {
                     description: "Tous vos documents doivent être validés avant de procéder au paiement.",
                     variant: "destructive"
                 });
-                navigate(`/dashboard/${encodeURIComponent(numeroCandidature || '')}`);
+                navigate(`/succes/${encodeURIComponent(numeroCandidature || '')}`);
             } else {
                 setIsCheckingDocs(false);
             }
