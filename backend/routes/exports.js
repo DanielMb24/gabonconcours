@@ -5,10 +5,9 @@ const { getConnection } = require('../config/database');
 const { authenticateAdmin } = require('../middleware/auth');
 
 // Export candidatures par concours (filtré par établissement)
-router.get('/candidatures/concours/:concours_id', async (req, res) => {
+router.get('/candidatures/concours', async (req, res) => {
     try {
-        const { concours_id } = req.params;
-        const { etablissement_id } = req.query;
+        const { concours_id, etablissement_id } = req.query;
         
         const connection = getConnection();
         

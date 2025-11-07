@@ -135,14 +135,27 @@ router.post('/', async (req, res) => {
         // Générer le reçu PDF si le paiement est validé ET que les données de base sont là
         if (paiement.statut === 'valide' && candidat && concours) {
             try {
+                // Générer le PDF
                 const pdfService = require('../services/pdfService');
                 const receipt = await pdfService.generatePaymentReceipt(candidat, paiement, concours);
                 await Paiement.update(paiement.id, { recu_path: receipt.relativePath });
                 paiement.recu_path = receipt.relativePath;
 
-                // Envoyer l'email de confirmation
-                const emailService = require('../services/emailService');
-                await emailService.sendPaymentConfirmation(candidat, paiement);
+                // Envoyer l'email de confirmation avec le reçu
+                const paymentEmailService = require('../services/paymentEmailService');
+                await paymentEmailService.sendPaymentReceipt({
+                    to: candidat.maican,
+                    candidat: {
+                        nom: candidat.nomcan,
+                        prenom: candidat.prncan,
+                        nupcan: candidat.nupcan,
+                        email: candidat.maican
+                    },
+                    montant: paiement.montant,
+                    reference: paiement.reference_paiement,
+                    concours: concours.libcnc || concours.nom,
+                    date: paiement.created_at || new Date()
+                });
 
                 // Créer une notification
                 const Notification = require('../models/Notification');
@@ -150,9 +163,11 @@ router.post('/', async (req, res) => {
                     candidat_id: candidat.id,
                     type: 'paiement',
                     titre: 'Paiement confirmé',
-                    message: `Votre paiement de ${paiement.montant} FCFA a été validé avec succès.`,
+                    message: `Votre paiement de ${paiement.montant} FCFA a été validé avec succès. Un reçu a été envoyé à votre email.`,
                     lu: false
                 });
+                
+                console.log('✅ Reçu PDF généré et email envoyé avec succès');
             } catch (pdfError) {
                 console.error('Erreur génération reçu/email:', pdfError);
             }

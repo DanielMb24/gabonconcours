@@ -33,7 +33,7 @@ const StatistiquesPage = () => {
         queryKey: ['etablissements'],
         queryFn: async () => {
             const response = await apiService.makeRequest('/etablissements', 'GET');
-            return response.data;
+            return Array.isArray(response.data) ? response.data : (response.data?.data || []);
         }
     });
 
@@ -41,7 +41,7 @@ const StatistiquesPage = () => {
         queryKey: ['filieres'],
         queryFn: async () => {
             const response = await apiService.makeRequest('/filieres', 'GET');
-            return response.data;
+            return Array.isArray(response.data) ? response.data : (response.data?.data || []);
         }
     });
 
@@ -49,7 +49,7 @@ const StatistiquesPage = () => {
         queryKey: ['concours-stats'],
         queryFn: async () => {
             const response = await apiService.makeRequest('/concours', 'GET');
-            return response.data;
+            return Array.isArray(response.data) ? response.data : (response.data?.data || []);
         }
     });
 
@@ -112,9 +112,9 @@ const StatistiquesPage = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Tous les établissements</SelectItem>
-                                {etablissements?.map((etab: any) => (
+                                {Array.isArray(etablissements) && etablissements.map((etab: any) => (
                                     <SelectItem key={etab.id} value={etab.id.toString()}>
-                                        {etab.nom}
+                                        {etab.nomets || etab.nom}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -126,9 +126,9 @@ const StatistiquesPage = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Toutes les filières</SelectItem>
-                                {filieres?.map((filiere: any) => (
+                                {Array.isArray(filieres) && filieres.map((filiere: any) => (
                                     <SelectItem key={filiere.id} value={filiere.id.toString()}>
-                                        {filiere.nom}
+                                        {filiere.nomfil || filiere.nom}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -140,9 +140,9 @@ const StatistiquesPage = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Tous les concours</SelectItem>
-                                {concours?.map((c: any) => (
+                                {Array.isArray(concours) && concours.map((c: any) => (
                                     <SelectItem key={c.id} value={c.id.toString()}>
-                                        {c.nom}
+                                        {c.libcnc || c.nom}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

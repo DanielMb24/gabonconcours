@@ -147,6 +147,7 @@ app.use('/api/candidatures', upload.fields([
     {name: 'documents', maxCount: 10}
 ]), candidatureRoutes);
 app.use('/api/subadmins', subAdminsRoutes);
+app.use('/api/administrateurs', require('./routes/administrateurs-list'));
 app.use('/api/administrateurs', administrateursRoutes);
 app.use('/api/candidats', candidatsExportRoutes);
 // Routes documents candidats AVANT la route générale

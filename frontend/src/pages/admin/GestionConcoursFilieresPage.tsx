@@ -27,7 +27,7 @@ const GestionConcoursFilieresPage = () => {
         queryKey: ['etablissements'],
         queryFn: async () => {
             const response = await apiService.makeRequest('/etablissements', 'GET');
-            return response.data;
+            return Array.isArray(response.data) ? response.data : (response.data?.data || []);
         }
     });
 
@@ -40,7 +40,7 @@ const GestionConcoursFilieresPage = () => {
                 `/concours?etablissement_id=${selectedEtablissement}`, 
                 'GET'
             );
-            return response.data;
+            return Array.isArray(response.data) ? response.data : (response.data?.data || []);
         },
         enabled: !!selectedEtablissement
     });

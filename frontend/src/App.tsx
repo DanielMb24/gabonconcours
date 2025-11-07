@@ -60,7 +60,11 @@ import NewHomePage from './pages/NewHomePage';
 import LoginCandidat from './pages/candidat/LoginCandidat';
 import StatistiquesPage from './pages/admin/StatistiquesPage';
 import LogsPage from './pages/admin/LogsPage';
+import LogsPageEnhanced from './pages/admin/LogsPageEnhanced';
 import GestionConcoursFilieresPage from './pages/admin/GestionConcoursFilieresPage';
+import MessagerieAdminPage from './pages/admin/MessagerieAdminPage';
+import SousAdminsPage from './pages/admin/SousAdminsPage';
+import MatieresManagementPage from './pages/admin/MatieresManagementPage';
 import APropos from './pages/APropos';
 
 
@@ -202,6 +206,10 @@ function App() {
                                     <GestionConcoursFilieresPage/>
                                 </SuperAdminRoute>
                             }/>
+                            <Route path="messagerie" element={<MessagerieAdminPage/>}/>
+                            <Route path="sous-admins" element={<SousAdminsPage/>}/>
+                            <Route path="matieres" element={<MatieresManagementPage/>}/>
+                            <Route path="logs" element={<LogsPageEnhanced/>}/>
                             <Route path="support" element={
                                 <SuperAdminRoute>
                                     <SuperAdminSupport/>
