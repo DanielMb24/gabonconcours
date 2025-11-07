@@ -14,34 +14,21 @@ const SuperAdminManagement: React.FC = () => {
                 </p>
             </div>
 
-            <Tabs defaultValue="concours" className="w-full">
+            <Tabs defaultValue="matieres" className="w-full">
                 <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="concours">Concours</TabsTrigger>
-                    <TabsTrigger value="etablissements">Établissements</TabsTrigger>
-                    <TabsTrigger value="filieres">Filières</TabsTrigger>
+                
                     <TabsTrigger value="matieres">Matières</TabsTrigger>
-                    <TabsTrigger value="niveaux">Niveaux</TabsTrigger>
+                   
+                    
                 </TabsList>
 
-                <TabsContent value="concours">
-                    <Concours  />
-                </TabsContent>
-
-                <TabsContent value="etablissements">
-                    <CrudManager entity="etablissements" title="Établissements" />
-                </TabsContent>
-
-                <TabsContent value="filieres">
-                    <CrudManager entity="filieres" title="Filières" />
-                </TabsContent>
+              
 
                 <TabsContent value="matieres">
                     <CrudManager entity="matieres" title="Matières" />
                 </TabsContent>
 
-                <TabsContent value="niveaux">
-                    <GestionNiveaux />
-                </TabsContent>
+              
             </Tabs>
         </div>
     );
