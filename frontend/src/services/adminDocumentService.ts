@@ -1,6 +1,7 @@
 import {apiService} from './api';
 
 export interface AdminDocumentData {
+    document_statut: string;
     id: number;
     nomdoc: string;
     type: string;

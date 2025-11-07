@@ -63,7 +63,22 @@
     import  {Modal,ModalContent} from "@/components/ui/modal";
 import AddDocumentDialog from '@/components/candidat/AddDocumentDialog.tsx';
 
+const StatusBadge = ({ status }: { status: string }) => {
+  const config: Record<string, { className: string; label: string }> = {
+    valide: { className: 'bg-emerald-100 text-emerald-800 border-emerald-200', label: 'Validé' },
+    rejete: { className: 'bg-rose-100 text-rose-800 border-rose-200', label: 'Rejeté' },
+    en_attente: { className: 'bg-amber-100 text-amber-800 border-amber-200', label: 'En attente' },
+    soumis: { className: 'bg-blue-100 text-blue-800 border-blue-200', label: 'Soumis' },
+  };
 
+  const { className, label } = config[status] || config.en_attente;
+
+  return (
+    <Badge variant="outline" className={className}>
+      {label}
+    </Badge>
+  );
+};
         const DashboardCandidat = () => {
             const { nupcan } = useParams<{ nupcan: string }>();
             const navigate = useNavigate();
@@ -772,17 +787,7 @@ const TelechargerRecu = async () => {
                                                         {/* Nom et statut */}
                                                         <div className="flex items-center justify-between mb-2">
                                                             <span className="font-medium truncate">{doc.nomdoc || 'Sans nom'}</span>
-                                                            <Badge
-                                                                variant={
-                                                                    doc.document_statut === 'valide'
-                                                                        ? 'success'
-                                                                        : doc.document_statut === 'rejete'
-                                                                            ? 'destructive'
-                                                                            : 'secondary'
-                                                                }
-                                                            >
-                                                                {doc.document_statut || 'Inconnu'}
-                                                            </Badge>
+                                                        <StatusBadge status={doc.document_statut} />
                                                         </div>
 
                                                         {/* Type et infos */}

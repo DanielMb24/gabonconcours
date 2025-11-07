@@ -1,13 +1,50 @@
-import React, {useState} from 'react';
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription} from '@/components/ui/dialog';
-import {Button} from '@/components/ui/button';
-import {Textarea} from '@/components/ui/textarea';
-import {Label} from '@/components/ui/label';
-import {Badge} from '@/components/ui/badge';
-import {CheckCircle, XCircle, FileText, User, Calendar, Eye} from 'lucide-react';
-import {toast} from '@/hooks/use-toast';
-import {receiptService} from '@/services/receiptService';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { CheckCircle2, XCircle, FileText, User, Calendar, Eye, AlertCircle, CheckCircle, XCircle as XCircleIcon, Clock } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import DocumentViewer from "@/components/DocumentViewer.tsx";
+
+// LE MÊME BADGE QUE DANS LE TABLEAU → COHÉRENCE TOTALE
+const StatusBadge = ({ status }: { status: string }) => {
+  const config: Record<string, { className: string; label: string; icon: React.ReactNode }> = {
+    valide: {
+      className: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      label: 'Validé',
+      icon: <CheckCircle className="h-3 w-3" />
+    },
+    rejete: {
+      className: 'bg-rose-100 text-rose-800 border-rose-300',
+      label: 'Rejeté',
+      icon: <XCircleIcon className="h-3 w-3" />
+    },
+    en_attente: {
+      className: 'bg-amber-100 text-amber-800 border-amber-300',
+      label: 'En attente',
+      icon: <Clock className="h-3 w-3" />
+    },
+    soumis: {
+      className: 'bg-blue-100 text-blue-800 border-blue-300',
+      label: 'Soumis',
+      icon: <Clock className="h-3 w-3" />
+    },
+  };
+
+  const normalized = status?.toLowerCase();
+  const { className, label, icon } = config[normalized] || config.en_attente;
+
+  return (
+    <Badge variant="outline" className={`font-semibold ${className} flex items-center gap-1.5 px-3 py-1`}>
+      {icon}
+      {label}
+    </Badge>
+  );
+};
 
 interface DocumentValidationModalProps {
     document: any;
@@ -23,14 +60,13 @@ interface DocumentValidationModalProps {
 }
 
 const DocumentValidationModal: React.FC<DocumentValidationModalProps> = ({
-                                                                             document,
-                                                                             isOpen,
-                                                                             onClose,
-                                                                             onValidate,
-                                                                             isValidating,
-                                                                             candidatInfo
-                                                                         }) => {
-
+    document,
+    isOpen,
+    onClose,
+    onValidate,
+    isValidating,
+    candidatInfo
+}) => {
     const [selectedDocument, setSelectedDocument] = useState<any | null>(null);
     const [validationType, setValidationType] = useState<'valide' | 'rejete' | null>(null);
     const [commentaire, setCommentaire] = useState('');
@@ -47,34 +83,20 @@ const DocumentValidationModal: React.FC<DocumentValidationModalProps> = ({
 
         try {
             await onValidate(document.id, statut, commentaire);
-
-            // // Envoyer une notification par email au candidat
-            // if (candidatInfo?.maican) {
-            //     try {
-            //         await receiptService.sendDocumentValidationEmail(
-            //             candidatInfo.maican,
-            //             document.nomdoc,
-            //             statut,
-            //             commentaire
-            //         );
-            //     } catch (emailError) {
-            //         console.error('Erreur envoi email:', emailError);
-            //         // Ne pas bloquer la validation si l'email échoue
-            //     }
-            // }
-
             setCommentaire('');
             setValidationType(null);
             onClose();
-
+            
             toast({
-                title: `Document ${statut}`,
-                description: `Le document a été ${statut} et le candidat a été notifié`,
+                title: statut === 'valide' ? "Validé avec succès !" : "Rejeté",
+                description: statut === 'valide' 
+                    ? "Le document a été validé avec succès" 
+                    : "Le document a été rejeté",
             });
         } catch (error) {
             toast({
                 title: "Erreur",
-                description: "Impossible de valider le document",
+                description: "Impossible de traiter la validation",
                 variant: "destructive",
             });
         }
@@ -82,135 +104,191 @@ const DocumentValidationModal: React.FC<DocumentValidationModalProps> = ({
 
     if (!document) return null;
 
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center">
-                        <FileText className="h-5 w-5 mr-2"/>
-                        Validation de document
-                    </DialogTitle>
-                    <DialogDescription>
-                        Vérifiez le document et validez ou rejetez-le avec un commentaire si nécessaire.
-                    </DialogDescription>
-                </DialogHeader>
+    const fileUrl = `http://localhost:3001/uploads/documents/${document.nom_fichier}`;
+    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(document.nom_fichier || '');
+    const isPdf = /\.pdf$/i.test(document.nom_fichier || '');
 
-                <div className="space-y-6">
-                    {/* Informations du document */}
-                    <div className="border rounded-lg p-4 bg-muted/20">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label className="text-sm font-medium">Type de document</Label>
-                                <p className="text-sm text-muted-foreground">{document.type || document.nomdoc}</p>
-                            </div>
-                            <div>
-                                <Label className="text-sm font-medium">Nom du fichier</Label>
-                                <p className="text-sm text-muted-foreground truncate">{document.nomdoc}</p>
-                            </div>
-                            {candidatInfo && (
-                                <>
+    return (
+        <>
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto p-0 rounded-2xl shadow-2xl">
+                    <DialogHeader className="p-8 pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-2xl">
+                        <DialogTitle className="flex items-center gap-4 text-3xl font-bold text-gray-800">
+                            <FileText className="h-10 w-10 text-blue-600" />
+                            Validation de document
+                        </DialogTitle>
+                        <DialogDescription className="text-lg text-gray-600 mt-2">
+                            Examinez attentivement le document avant de prendre une décision.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="px-8 pb-8 space-y-8">
+                        {/* Infos candidat + document */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <Card className="border-2 shadow-lg">
+                                <CardContent className="pt-6 space-y-6">
                                     <div>
-                                        <Label className="text-sm font-medium">Candidat</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            {candidatInfo.prncan} {candidatInfo.nomcan}
+                                        <Label className="text-sm font-bold text-gray-600">Document</Label>
+                                        <p className="text-xl font-bold text-gray-800 mt-1">
+                                            {document.nomdoc}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">Type: {document.type || 'Non spécifié'}</p>
+                                    </div>
+
+                                    {candidatInfo && (
+                                        <div className="pt-4 border-t">
+                                            <Label className="text-sm font-bold text-gray-600 flex items-center gap-2">
+                                                <User className="h-5 w-5" /> Candidat
+                                            </Label>
+                                            <p className="text-lg font-semibold mt-1">
+                                                {candidatInfo.prncan} {candidatInfo.nomcan}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">{candidatInfo.maican}</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-2 shadow-lg">
+                                <CardContent className="pt-6 space-y-6">
+                                    <div>
+                                        <Label className="text-sm font-bold text-gray-600">Date de soumission</Label>
+                                        <p className="flex items-center gap-3 text-lg font-medium mt-2">
+                                            <Calendar className="h-6 w-6 text-blue-600" />
+                                            {new Date(document.created_at).toLocaleDateString('fr-FR', {
+                                                weekday: 'long',
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
                                         </p>
                                     </div>
-                                    <div>
-                                        <Label className="text-sm font-medium">Email</Label>
-                                        <p className="text-sm text-muted-foreground">{candidatInfo.maican}</p>
+
+                                    <div className="pt-4 border-t">
+                                        <Label className="text-sm font-bold text-gray-600">Statut actuel</Label>
+                                        <div className="mt-3">
+                                            <StatusBadge status={document.document_statut || document.statut || 'en_attente'} />
+                                        </div>
                                     </div>
-                                </>
-                            )}
-                            <div>
-                                <Label className="text-sm font-medium">Date de soumission</Label>
-                                <p className="text-sm text-muted-foreground flex items-center">
-                                    <Calendar className="h-3 w-3 mr-1"/>
-                                    {new Date(document.created_at || document.create_at).toLocaleDateString('fr-FR')}
-                                </p>
-                            </div>
-                            <div>
-                                <Label className="text-sm font-medium">Statut actuel</Label>
-                                <Badge className={`${
-                                    document.statut === 'valide' ? 'bg-green-500' :
-                                        document.statut === 'rejete' ? 'bg-red-500' : 'bg-yellow-500'
-                                } text-white`}>
-                                    {document.statut}
-                                </Badge>
-                            </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </div>
 
+                        {/* Aperçu du document */}
+                        <div>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-2xl font-bold text-gray-800">Aperçu du document</h3>
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    onClick={() => setSelectedDocument(document)}
+                                    className="shadow-md hover:shadow-lg transition-shadow"
+                                >
+                                    <Eye className="h-5 w-5 mr-2" />
+                                    Plein écran
+                                </Button>
+                            </div>
 
+                            <Card className="overflow-hidden border-2 shadow-xl">
+                                <div className="bg-gradient-to-b from-gray-50 to-gray-100 p-6 min-h-96 flex items-center justify-center">
+                                    {document.nom_fichier ? (
+                                        isImage ? (
+                                            <img
+                                                src={fileUrl}
+                                                alt={document.nomdoc}
+                                                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                                            />
+                                        ) : isPdf ? (
+                                            <iframe
+                                                src={`${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                                className="w-full h-96 rounded-xl border-2 border-gray-300 shadow-inner"
+                                                title="PDF Preview"
+                                            />
+                                        ) : (
+                                            <div className="text-center py-16">
+                                                <FileText className="h-20 w-20 text-gray-400 mx-auto mb-6" />
+                                                <p className="text-xl font-medium text-gray-600">Aperçu non disponible</p>
+                                                <p className="text-sm text-gray-500 mt-2">{document.nom_fichier}</p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="text-xl text-gray-500">Aucun fichier joint</p>
+                                    )}
+                                </div>
+                            </Card>
+                        </div>
 
+                        <Separator className="my-8" />
 
-                    {/* Zone de prévisualisation */}
-                    <Button className="borderb text-gray-400 mx-auto mb-4 rounded-lg p-4 bg-gray-50 min-h-[200px] flex items-center justify-center"
+                        {/* Commentaire */}
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="commentaire" className="text-xl font-bold">
+                                    Commentaire {validationType === 'rejete' && <span className="text-rose-600">(obligatoire)</span>}
+                                </Label>
+                                {validationType === 'rejete' && (
+                                    <p className="text-rose-600 flex items-center gap-2 mt-2 font-medium">
+                                        <AlertCircle className="h-5 w-5" />
+                                        Précisez la raison du rejet (ex: illisible, expiré, faux document...)
+                                    </p>
+                                )}
+                            </div>
+                            <Textarea
+                                id="commentaire"
+                                value={commentaire}
+                                onChange={(e) => setCommentaire(e.target.value)}
+                                onFocus={() => setValidationType('rejete')}
+                                placeholder={validationType === 'rejete' 
+                                    ? "Ex: Document illisible / Date expirée / Signature manquante..."
+                                    : "Commentaire optionnel (recommandé pour le rejet)"}
+                                rows={5}
+                                className="text-lg resize-none border-2 focus:border-blue-500 transition-colors"
+                            />
+                        </div>
 
-                             onClick={() => setSelectedDocument(document)}>
-                                <Eye className="h-14  mr-2  w-16 " /> Voir
-
-                            <p className="text-sm text-gray-400">{document.nomdoc}</p>
-
-            </Button>
-
-                    <DocumentViewer
-                        isOpen={!!selectedDocument}
-                        onClose={() => setSelectedDocument(null)}
-                        document={selectedDocument || null}
-                    />
-
-                    {/* Commentaire pour la validation */}
-                    <div className="space-y-2">
-                        <Label htmlFor="commentaire">
-                            Commentaire {validationType === 'rejete' ? '(requis pour un rejet)' : '(optionnel)'}
-                        </Label>
-                        <Textarea
-                            id="commentaire"
-                            value={commentaire}
-                            onChange={(e) => setCommentaire(e.target.value)}
-                            placeholder={
-                                validationType === 'rejete'
-                                    ? "Expliquez la raison du rejet..."
-                                    : "Ajoutez un commentaire (optionnel)..."
-                            }
-                            rows={3}
-                        />
-                    </div>
-
-                    {/* Actions de validation */}
-                    <div className="flex justify-between items-center pt-4 border-t">
-                        <Button
-                            variant="outline"
-                            onClick={onClose}
-                            disabled={isValidating}
-                        >
-                            Annuler
-                        </Button>
-
-                        <div className="flex space-x-3">
+                        {/* Boutons d'action */}
+                        <div className="flex justify-end gap-6 pt-8">
                             <Button
+                                variant="outline"
+                                onClick={onClose}
+                                disabled={isValidating}
+                                size="lg"
+                                className="px-10 text-lg font-semibold"
+                            >
+                                Annuler
+                            </Button>
+
+                            <Button
+                                variant="destructive"
                                 onClick={() => handleValidation('rejete')}
                                 disabled={isValidating}
-                                variant="destructive"
-                                className="flex items-center"
+                                size="lg"
+                                className="px-12 text-lg font-bold shadow-lg hover:shadow-xl"
                             >
-                                <XCircle className="h-4 w-4 mr-2"/>
-                                {isValidating ? 'Rejet...' : 'Rejeter'}
+                                <XCircle className="h-6 w-6 mr-3" />
+                                {isValidating ? 'Rejet en cours...' : 'Rejeter'}
                             </Button>
 
                             <Button
                                 onClick={() => handleValidation('valide')}
                                 disabled={isValidating}
-                                className="bg-green-600 hover:bg-green-700 flex items-center"
+                                size="lg"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-12 text-lg font-bold shadow-lg hover:shadow-xl"
                             >
-                                <CheckCircle className="h-4 w-4 mr-2"/>
+                                <CheckCircle2 className="h-6 w-6 mr-3" />
                                 {isValidating ? 'Validation...' : 'Valider'}
                             </Button>
                         </div>
                     </div>
-                </div>
-            </DialogContent>
-        </Dialog>
+                </DialogContent>
+            </Dialog>
+
+            <DocumentViewer
+                isOpen={!!selectedDocument}
+                onClose={() => setSelectedDocument(null)}
+                document={selectedDocument || null}
+            />
+        </>
     );
 };
 

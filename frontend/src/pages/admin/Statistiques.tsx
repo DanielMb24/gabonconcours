@@ -64,7 +64,7 @@ const Statistiques = () => {
     { mois: '2025-09', candidats: Math.floor((statisticsData?.candidats?.total || 0) * 0.95) },
     { mois: '2025-10', candidats: statisticsData?.candidats?.total || 0 },
   ];
-
+3.0
   const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
 
   if (isLoading) {

@@ -130,70 +130,97 @@ router.put('/:id/replace', upload.single('file'), async (req, res) => {
 
 // ✅ Ajouter un nouveau document (max 3 supplémentaires)
 router.post('/add', upload.single('file'), async (req, res) => {
+    const connection = getConnection();
+    const file = req.file;
+    const { nupcan, nomdoc, type } = req.body;
+
     try {
-        const connection = getConnection();
-        const { nupcan, nomdoc, type } = req.body;
-        const file = req.file;
-const nipcan = nupcan; // Correction possible du paramètre
+        const nipcan = nupcan; // alias cohérent
+
+        // 🔸 Validation des champs requis
         if (!file || !nupcan || !nomdoc) {
-            if (file) fs.unlinkSync(file.path);
+            if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
             return res.status(400).json({
                 success: false,
-                message: 'Fichier, NUPCAN et nom du document requis'
+                message: 'Fichier, NUPCAN et nom du document sont requis',
             });
         }
 
-        // Vérifier le nombre de documents du candidat
-        const canAdd = await Document.canAddDocument(nupcan);
-        if (!canAdd) {
-            fs.unlinkSync(file.path);
-            return res.status(400).json({
-                success: false,
-                message: 'Vous avez atteint le maximum de 6 documents'
-            });
-        }
-
-        // Créer le document
-        const doc = await Document.create({
-            nomdoc: nomdoc,
-            type: type || 'document',
-            nom_fichier: file.filename,
-            statut: 'en_attente'
-        });
-
-        // Récupérer les infos du candidat pour le lier au dossier
+        // 🔹 Vérifier si le candidat existe
         const [candidats] = await connection.execute(
             'SELECT * FROM candidats WHERE nupcan = ?',
             [nupcan]
         );
 
-        if (candidats.length > 0) {
-            const candidat = candidats[0];
-            
-            // Créer l'entrée dans dossiers
-            await connection.execute(
-                `INSERT INTO dossiers (candidat_id, concours_id, document_id, nipcan, created_at)
-                 VALUES (?, ?, ?, ?, NOW())`,
-                [candidat.id, candidat.concours_id, doc.id, nipcan]
-            );
+        if (candidats.length === 0) {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            return res.status(404).json({
+                success: false,
+                message: 'Candidat introuvable pour ce NUPCAN',
+            });
         }
+
+        const candidat = candidats[0];
+
+        // 🔹 Vérifier le nombre de documents existants (max 6)
+        const canAdd = await Document.canAddDocument(nupcan);
+        if (!canAdd) {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            return res.status(400).json({
+                success: false,
+                message: 'Nombre maximum de documents atteint (6)',
+            });
+        }
+
+        // 🔹 Déterminer le type du fichier si non fourni
+        let fileType = type;
+        if (!fileType) {
+            const ext = path.extname(file.originalname).toLowerCase();
+            if (ext === '.pdf') fileType = 'pdf';
+            else if (['.jpg', '.jpeg', '.png'].includes(ext)) fileType = 'image';
+            else fileType = 'autre';
+        }
+
+        // 🔹 Créer l’entrée dans la table documents
+        const doc = await Document.create({
+            nomdoc,
+            type: fileType,
+            nom_fichier: file.filename,
+            chemin_fichier: path.join('uploads/documents', file.filename),
+            statut: 'en_attente',
+        });
+
+        // 🔹 Créer une entrée dans la table dossiers
+        await connection.execute(
+            `INSERT INTO dossiers (candidat_id, concours_id, document_id, nipcan, docdsr, created_at)
+             VALUES (?, ?, ?, ?, ?, NOW())`,
+            [
+                candidat.id,
+                candidat.concours_id,
+                doc.id,
+                nipcan,
+                path.join('uploads/documents', file.filename),
+            ]
+        );
 
         res.json({
             success: true,
-            message: 'Document ajouté avec succès',
-            data: doc
+            message: 'Document ajouté et dossier mis à jour avec succès',
+            data: {
+                ...doc,
+                nipcan,
+                docdsr: path.join('uploads/documents', file.filename),
+            },
         });
-
     } catch (error) {
         console.error('Erreur ajout document:', error);
-        
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
-        
+
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
         res.status(500).json({
             success: false,
-            message: error.message || 'Erreur lors de l\'ajout du document'
+            message: 'Erreur lors de l’ajout du document',
+            error: error.message,
         });
     }
 });
