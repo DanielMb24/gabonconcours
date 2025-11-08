@@ -9,7 +9,7 @@ services:
     buildCommand: npm run build:full
 
     # Démarrer le serveur backend
-    startCommand: cd backend && npm start
+    startCommand: cd backend && npm run dev
 
     envVars:
       NODE_ENV: production
