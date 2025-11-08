@@ -276,9 +276,14 @@ const startServer = async () => {
 // Démarrer le serveur
 startServer();
 // SERVIR LE FRONTEND
-app.use(express.static('public'));
-app.get('*', (req, res) => {
-  if (req.originalUrl.startsWith('/api')) return next();
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
+// SERVIR FRONTEND EN PRODUCTION
+if (process.env.NODE_ENV === 'production') {
+  const frontendDist = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    if (req.originalUrl.startsWith('/api')) return next();
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+  console.log('Frontend servi depuis:', frontendDist);
+}
 module.exports = app;
