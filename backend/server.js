@@ -216,6 +216,9 @@ app.get('/api/test', (req, res) => {
         ]
     });
 });
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 // Middleware de gestion d'erreurs
 app.use((error, req, res, next) => {
@@ -273,21 +276,18 @@ const startServer = async () => {
     }
 };
 
-// Démarrer le serveur
-
-// SERVIR LE FRONTEND
-// SERVIR FRONTEND EN PRODUCTION
-// SERVIR LE FRONTEND EN PRODUCTION (Render)    
 if (process.env.NODE_ENV === 'production') {
   const frontendDist = path.join(__dirname, '../frontend/dist');
   console.log('Frontend servi depuis :', frontendDist);
   
   app.use(express.static(frontendDist));
   
-  app.get('*', (req, res) => {
-    if (req.originalUrl.startsWith('/api/')) return next();
+  // Tous les chemins qui ne commencent pas par /api/ servent index.html
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api/')) return next(); // laisse passer les API
     res.sendFile(path.join(frontendDist, 'index.html'));
   });
 }
+
 startServer();
 module.exports = app;
