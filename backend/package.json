@@ -6,7 +6,7 @@
  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "build:full": "cd frontend && npm install && npm run build && cp -r dist ../public && cd ..",
+    "build:full": "cd ../frontend && npm install && npm run build && cp -r dist /public && cd ..",
     "dev": "nodemon server.js",
     "init-db": "node scripts/initDatabase.js"
   },
