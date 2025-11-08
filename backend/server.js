@@ -275,5 +275,26 @@ const startServer = async () => {
 
 // Démarrer le serveur
 startServer();
-
+// ==================== SERVE FRONTEND REACT EN PRODUCTION ====================
+if (process.env.NODE_ENV === 'production') {
+    const frontendPath = path.join(__dirname, 'frontend', 'dist');
+    
+    // Servir les fichiers statiques du build React
+    app.use(express.static(frontendPath));
+    
+    // Rediriger toutes les routes vers index.html (SPA)
+    app.get('*', (req, res) => {
+        // Ne pas écraser les routes API
+        if (req.originalUrl.startsWith('/api')) {
+            return res.status(404).json({
+                success: false,
+                message: `Route non trouvée: ${req.method} ${req.originalUrl}`
+            });
+        }
+        res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+    
+    console.log('Frontend React servi depuis:', frontendPath);
+}
+// =========================================================================
 module.exports = app;
