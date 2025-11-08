@@ -24,7 +24,9 @@ interface CandidatApiResponse {
 }
 
 class CandidatureService {
-    private baseUrl = 'http://localhost:3001/api';
+    private baseUrl = import.meta.env.PROD
+  ? "https://gabonconcours-1.onrender.com/api" // backend Render
+  : "http://localhost:10000/api";
 
     private determineProgression(candidat: any, documents: any[], paiement: any) {
         const etapesCompletes: string[] = [];

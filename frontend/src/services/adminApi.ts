@@ -1,8 +1,15 @@
 import axios from 'axios';
 import {ApiResponse} from "@/services/api.ts";
 
-const BASE_URL = 'http://localhost:3001/api/admin';
-const BASE_URL2 = 'http://localhost:3001/api';
+const BASE_URL = import.meta.env.PROD
+  ? "https://gabonconcours-1.onrender.com/api" // backend Render
+  : "http://localhost:10000/api"; // backend local
+
+const BASE_URL2 = import.meta.env.PROD
+  ? "https://gabonconcours-1.onrender.com/api" // backend Render
+  : "http://localhost:10000/api"; // backend local
+
+
 
  async function makeRequest<T>(url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', data?: any): Promise<ApiResponse<T>> {
     try {
