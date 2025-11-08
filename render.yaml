@@ -4,8 +4,12 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run dev
+    buildCommand: |
+      # Installer les dépendances backend
+      cd backend && npm install
+      # Installer et builder le frontend
+      cd ../frontend && npm install && npm run build
+    startCommand: cd backend && npm start
     envVars:
       NODE_ENV: production
       DB_HOST: tramway.proxy.rlwy.net
