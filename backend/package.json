@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Backend API pour la plateforme de concours gabonaise",
   "main": "server.js",
-  "type": "commonjs",
+ "type": "commonjs",
   "scripts": {
     "start": "node server.js",
+    "build:full": "cd frontend && npm install && npm run build && cp -r dist ../public && cd ..",
     "dev": "nodemon server.js",
     "init-db": "node scripts/initDatabase.js"
   },
