@@ -5,17 +5,12 @@ services:
     region: oregon
     plan: free
 
-    # Commande pour build complet (backend + frontend)
-    buildCommand: |
-      # Installer les dépendances backend
-      cd backend && npm install
-      # Installer et builder le frontend
-      cd ../frontend && npm install && npm run build
+    # Build complet backend + frontend
+    buildCommand: npm run build:full
 
-    # Commande pour démarrer le serveur
+    # Démarrer le serveur backend
     startCommand: cd backend && npm start
 
-    # Variables d'environnement
     envVars:
       NODE_ENV: production
       DB_HOST: tramway.proxy.rlwy.net
@@ -25,7 +20,4 @@ services:
       DB_NAME: railway
       PORT: 10000
 
-    # Optionnel : ajuster la version Node si nécessaire
-    plan: free
-    env: node
     nodeVersion: 22.16.0
