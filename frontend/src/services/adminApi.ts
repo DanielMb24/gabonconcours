@@ -100,7 +100,7 @@ export const adminApiService = {
         try {
             console.log('Service createAdmin appelé avec:', adminData);
             const token = adminApiService.getToken();
-            const response = await axios.post(`${BASE_URL}/management/admins`, adminData, {
+            const response = await axios.post(`${BASE_URL}/admin/management/admins`, adminData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ export const adminApiService = {
     updateAdmin: async (id: number, adminData: any) => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.put(`${BASE_URL}/management/admins/${id}`, adminData, {
+            const response = await axios.put(`${BASE_URL}/admin/management/admins/${id}`, adminData, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             return response.data;
@@ -131,7 +131,7 @@ export const adminApiService = {
     deleteAdmin: async (id: number) => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.delete(`${BASE_URL}/management/admins/${id}`, {
+            const response = await axios.delete(`${BASE_URL}/admin/management/admins/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             return response.data;
