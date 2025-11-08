@@ -10,7 +10,7 @@
   "version": "5.0.0",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+  "build:full": "cd backend && npm install && cd ../frontend && npm install && npm run build",
     "start": "node backend/server.js"
   },
   "engines": {
