@@ -274,7 +274,7 @@ const startServer = async () => {
 };
 
 // Démarrer le serveur
-startServer();
+
 // SERVIR LE FRONTEND
 // SERVIR FRONTEND EN PRODUCTION
 // SERVIR LE FRONTEND EN PRODUCTION (Render)
@@ -289,4 +289,5 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(frontendDist, 'index.html'));
   });
 }
+startServer();
 module.exports = app;
