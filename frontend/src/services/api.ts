@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:10000/api';
+
+
+
+export const API_BASE_URL = import.meta.env.PROD
+  ? "https://gabonconcours-1.onrender.com/api" // backend Render
+  : "http://localhost:10000/api"; // backend local
+
 
 export interface ApiResponse<T> {
     success: boolean;
@@ -14,11 +20,12 @@ export type LegacyApiResponse<T = any> = ApiResponse<T> | T;
 
 // Instance axios pour la compatibilité
 export const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
+
 
 export class ApiService {
     delete(arg0: string, arg1: { data: { deleted_by: number; }; }): any {
