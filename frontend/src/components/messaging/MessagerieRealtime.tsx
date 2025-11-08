@@ -59,7 +59,7 @@ const MessagerieRealtime: React.FC<MessagerieRealtimeProps> = ({ nupcan, mode, a
   const loadMessages = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/messaging-realtime/conversation/${nupcan}`);
+      const response = await fetch(`https://gabonconcours-1.onrender.com/api/messaging-realtime/conversation/${nupcan}`);
       const data = await response.json();
       
       if (data.success) {
@@ -101,7 +101,7 @@ const MessagerieRealtime: React.FC<MessagerieRealtimeProps> = ({ nupcan, mode, a
     setSending(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/messaging-realtime/candidat/send', {
+      const response = await fetch('https://gabonconcours-1.onrender.com/api/messaging-realtime/candidat/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -149,7 +149,7 @@ const MessagerieRealtime: React.FC<MessagerieRealtimeProps> = ({ nupcan, mode, a
     setSending(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/messaging-realtime/admin/reply', {
+      const response = await fetch('https://gabonconcours-1.onrender.com/api/messaging-realtime/admin/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -189,7 +189,7 @@ const MessagerieRealtime: React.FC<MessagerieRealtimeProps> = ({ nupcan, mode, a
   // Marquer comme lu
   const markAsRead = async (messageId: number) => {
     try {
-      await fetch(`http://localhost:3001/api/messaging-realtime/${messageId}/read`, {
+      await fetch(`https://gabonconcours-1.onrender.com/api/messaging-realtime/${messageId}/read`, {
         method: 'PUT'
       });
       loadMessages();

@@ -49,7 +49,7 @@ const ConversationsAdmin: React.FC<ConversationsAdminProps> = ({ etablissementId
       if (search) params.append('search', search);
 
       const response = await fetch(
-        `http://localhost:3001/api/messaging-realtime/admin/conversations?${params.toString()}`
+        `https://gabonconcours-1.onrender.com/api/messaging-realtime/admin/conversations?${params.toString()}`
       );
       const data = await response.json();
       

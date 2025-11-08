@@ -179,7 +179,7 @@ const DocumentValidationInterface: React.FC<DocumentValidationInterfaceProps> = 
         `
             };
 
-            await fetch('http://localhost:3001/api/email/send', {
+            await fetch('https://gabonconcours-1.onrender.com/api/email/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
