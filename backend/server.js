@@ -279,6 +279,6 @@ startServer();
 app.use(express.static('public'));
 app.get('*', (req, res) => {
   if (req.originalUrl.startsWith('/api')) return next();
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 module.exports = app;
