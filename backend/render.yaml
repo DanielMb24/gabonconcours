@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: gabonconcours-v5
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      NODE_ENV: production
+      DB_HOST: tramway.proxy.rlwy.net
+      DB_PORT: "16318"
+      DB_USER: root
+      DB_PASSWORD: DCGmuHAEJBSNCBrJjdnhFJyLLCNzopSZ
+      DB_NAME: railway
+      PORT: 10000
