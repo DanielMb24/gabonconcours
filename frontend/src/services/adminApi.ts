@@ -86,7 +86,7 @@ export const adminApiService = {
     getAdmins: async () => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.get(`${BASE_URL}/management/admins`, {
+            const response = await axios.get(`${BASE_URL}/admin/management/admins`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             return response.data;
