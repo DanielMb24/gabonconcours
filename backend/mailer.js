@@ -1,45 +1,32 @@
-const nodemailer = require('nodemailer');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
-    secure: process.env.SMTP_SECURE === 'true', // false pour 587
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
+// Configuration API Brevo
+const client = SibApiV3Sdk.ApiClient.instance;
+client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('❌ Erreur connexion SMTP:', error.message);
-    } else {
-        console.log('✅ SMTP prêt à envoyer les emails via Brevo.');
-    }
-});
+const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-async function sendEmail(to, subject, htmlContent, attachments = []) {
+/**
+ * Envoi d'un email via Brevo API
+ * @param {string} to - destinataire
+ * @param {string} subject - objet
+ * @param {string} htmlContent - contenu HTML
+ */
+async function sendEmail(to, subject, htmlContent) {
     try {
-        const mailOptions = {
-            from: {
-                name: 'GABConcours',
-                address: process.env.EMAIL_FROM
-            },
-            to,
+        const sendSmtpEmail = {
+            sender: { name: 'GABConcours', email: process.env.EMAIL_FROM },
+            to: [{ email: to }],
             subject,
-            html: htmlContent,
-            attachments
+            htmlContent
         };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`📩 Email envoyé à ${to} | MessageID: ${info.messageId}`);
-        return { success: true, messageId: info.messageId };
+        const response = await tranEmailApi.sendTransacEmail(sendSmtpEmail);
+        console.log(`📩 Email envoyé à ${to} | ID: ${response.messageId}`);
+        return { success: true, messageId: response.messageId };
     } catch (error) {
-        console.error('❌ Erreur envoi email:', error.message);
+        console.error('❌ Erreur envoi email via API Brevo:', error.response?.body || error.message);
         return { success: false, message: error.message };
     }
 }
