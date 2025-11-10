@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer');
 // Configuration du transporteur email
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: process.env.SMTP_PORT || 587,
-    secure: false,
+    port: process.env.SMTP_PORT || 465,
+    secure: process.env.SMTP_SECURE || true,
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -37,7 +37,7 @@ class EmailService {
             
             <p style="color: #dc2626;"><strong>Important :</strong> Veuillez changer votre mot de passe lors de votre première connexion.</p>
             
-            <p>Vous pouvez vous connecter à l'adresse : <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/admin/login">Connexion Admin</a></p>
+            <p>Vous pouvez vous connecter à l'adresse : <a href="${process.env.FRONTEND_URL || 'https://gabonconcours-1.onrender.com'}/admin/login">Connexion Admin</a></p>
             
             <p>Cordialement,<br>L'équipe de gestion des concours</p>
           </div>
