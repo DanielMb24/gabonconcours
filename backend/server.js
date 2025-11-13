@@ -108,7 +108,6 @@ const superAdminActionsRoutes = require('./routes/super-admin-actions');
 const adminLogsRoutes = require('./routes/admin-logs');
 const serveFilesRoutes = require('./routes/serve-files');
 const messagingRoutes = require('./routes/messaging');
-const frontendDist = path.join(__dirname, '../frontend/dist');
 
 // API Routes
 app.use('/api/concours', concoursRoutes);
@@ -182,7 +181,6 @@ app.use('/api/statistics', require('./routes/statistics-global'));
 const { router: notificationsRouter } = require('./routes/notifications-system');
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/messaging', require('./routes/messaging-enhanced'));
-app.use(express.static(frontendDist));
 
 // Importer les fonctions de base de données
 const {createConnection, testConnection} = require('./config/database');
@@ -218,15 +216,6 @@ app.get('/api/test', (req, res) => {
         ]
     });
 });
-
-// Servir tout le dist
-
-// Toutes les routes non /api/ pointent vers index.html
-app.get('*', (req, res, next) => {
-  if (req.originalUrl.startsWith('/api/')) return next();
-  res.sendFile(path.join(frontendDist, 'index.html'));
-});
-
 
 // Middleware de gestion d'erreurs
 app.use((error, req, res, next) => {
@@ -284,18 +273,7 @@ const startServer = async () => {
     }
 };
 
-if (process.env.NODE_ENV === 'production') {
-  const frontendDist = path.join(__dirname, '../frontend/dist');
-  console.log('Frontend servi depuis :', frontendDist);
-  
-  app.use(express.static(frontendDist));
-  
-  // Tous les chemins qui ne commencent pas par /api/ servent index.html
-  app.get('*', (req, res, next) => {
-    if (req.originalUrl.startsWith('/api/')) return next(); // laisse passer les API
-    res.sendFile(path.join(frontendDist, 'index.html'));
-  });
-}
-
+// Démarrer le serveur
 startServer();
+
 module.exports = app;

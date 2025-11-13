@@ -1,15 +1,8 @@
 import axios from 'axios';
 import {ApiResponse} from "@/services/api.ts";
 
-const BASE_URL = import.meta.env.PROD
-  ? "https://gabonconcours-1.onrender.com/api" // backend Render
-  : "http://localhost:10000/api"; // backend local
-
-const BASE_URL2 = import.meta.env.PROD
-  ? "https://gabonconcours-1.onrender.com/api" // backend Render
-  : "http://localhost:10000/api"; // backend local
-
-
+const BASE_URL = 'http://localhost:3001/api/admin';
+const BASE_URL2 = 'http://localhost:3001/api';
 
  async function makeRequest<T>(url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', data?: any): Promise<ApiResponse<T>> {
     try {
@@ -86,7 +79,7 @@ export const adminApiService = {
     getAdmins: async () => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.get(`${BASE_URL}/admin/management/admins`, {
+            const response = await axios.get(`${BASE_URL}/management/admins`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             return response.data;
@@ -100,7 +93,7 @@ export const adminApiService = {
         try {
             console.log('Service createAdmin appelé avec:', adminData);
             const token = adminApiService.getToken();
-            const response = await axios.post(`${BASE_URL}/admin/management/admins`, adminData, {
+            const response = await axios.post(`${BASE_URL}/management/admins`, adminData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -118,7 +111,7 @@ export const adminApiService = {
     updateAdmin: async (id: number, adminData: any) => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.put(`${BASE_URL}/admin/management/admins/${id}`, adminData, {
+            const response = await axios.put(`${BASE_URL}/management/admins/${id}`, adminData, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             return response.data;
@@ -131,7 +124,7 @@ export const adminApiService = {
     deleteAdmin: async (id: number) => {
         try {
             const token = adminApiService.getToken();
-            const response = await axios.delete(`${BASE_URL}/admin/management/admins/${id}`, {
+            const response = await axios.delete(`${BASE_URL}/management/admins/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             return response.data;

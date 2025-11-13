@@ -32,7 +32,7 @@ const Support = () => {
         setError(null);
 
         try {
-            const response = await axios.post('https://gabonconcours-1.onrender.com/api/support/requests', formData, {
+            const response = await axios.post('http://localhost:3001/api/support/requests', formData, {
     headers: { 'Content-Type': 'application/json' }
 });
             if (response.status === 201) {

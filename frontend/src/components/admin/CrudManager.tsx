@@ -152,7 +152,7 @@ const CrudManager: React.FC<CrudManagerProps> = ({ entity, title }) => {
                         </div>
                     </>
                 );
-    
+            // Ajouter d'autres cas pour concours, établissements, filières
             default:
                 return <p>Formulaire non disponible pour cette entité</p>;
         }

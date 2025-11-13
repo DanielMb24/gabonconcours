@@ -76,7 +76,7 @@ const EnhancedDocumentsManager: React.FC<EnhancedDocumentsManagerProps> = ({
   const loadDocuments = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`https://gabonconcours-1.onrender.com/api/documents-enhanced/candidat/${candidatId}`);
+      const response = await fetch(`http://localhost:3001/api/documents-enhanced/candidat/${candidatId}`);
       const data = await response.json();
       
       if (data.success) {
@@ -140,7 +140,7 @@ const EnhancedDocumentsManager: React.FC<EnhancedDocumentsManagerProps> = ({
       formData.append('concours_id', concoursId.toString());
       formData.append('nupcan', nupcan);
 
-      const response = await fetch('https://gabonconcours-1.onrender.com/api/documents-enhanced', {
+      const response = await fetch('http://localhost:3001/api/documents-enhanced', {
         method: 'POST',
         body: formData
       });
@@ -189,7 +189,7 @@ const EnhancedDocumentsManager: React.FC<EnhancedDocumentsManagerProps> = ({
         formData.append('nomdoc', doc.nomdoc);
       }
 
-      const response = await fetch(`https://gabonconcours-1.onrender.com/api/documents-enhanced/${docId}/replace`, {
+      const response = await fetch(`http://localhost:3001/api/documents-enhanced/${docId}/replace`, {
         method: 'PUT',
         body: formData
       });
@@ -224,7 +224,7 @@ const EnhancedDocumentsManager: React.FC<EnhancedDocumentsManagerProps> = ({
     }
 
     try {
-      const response = await fetch(`https://gabonconcours-1.onrender.com/api/documents-enhanced/${docId}`, {
+      const response = await fetch(`http://localhost:3001/api/documents-enhanced/${docId}`, {
         method: 'DELETE'
       });
 
@@ -250,7 +250,7 @@ const EnhancedDocumentsManager: React.FC<EnhancedDocumentsManagerProps> = ({
 
   const handleDownload = async (docId: number, nomdoc: string) => {
     try {
-      const response = await fetch(`https://gabonconcours-1.onrender.com/api/documents-enhanced/${docId}/download`);
+      const response = await fetch(`http://localhost:3001/api/documents-enhanced/${docId}/download`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

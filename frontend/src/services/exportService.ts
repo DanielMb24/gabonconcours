@@ -1,10 +1,7 @@
 import { apiService } from './api';
 
 class ExportService {
-  private baseUrl =import.meta.env.PROD
-  ? "https://gabonconcours-1.onrender.com/api" // backend Render
-  : "http://localhost:10000/api"; // backend local
-
+  private baseUrl = 'http://localhost:3001/api';
 
   // Exporter les candidats en Excel
   async exportCandidatesExcel(concoursId?: number): Promise<void> {

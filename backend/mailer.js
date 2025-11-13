@@ -1,32 +1,61 @@
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+// mailer.js
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Configuration API Brevo
-const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
-
-const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+/**
+ * Configuration du transporteur SMTP (ici Gmail)
+ * Assure-toi d’avoir bien généré un mot de passe d’application :
+ * 👉 https://myaccount.google.com/apppasswords
+ */
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
+    secure: false, // true pour port 465, false pour 587
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    },
+    tls: {
+        rejectUnauthorized: false // utile pour éviter les erreurs de certificat en dev
+    }
+});
 
 /**
- * Envoi d'un email via Brevo API
- * @param {string} to - destinataire
- * @param {string} subject - objet
- * @param {string} htmlContent - contenu HTML
+ * Vérifie la connexion SMTP au démarrage
  */
-async function sendEmail(to, subject, htmlContent) {
+transporter.verify((error, success) => {
+    if (error) {
+        console.error('❌ Erreur connexion SMTP:', error.message);
+    } else {
+        console.log('✅ SMTP prêt à envoyer les emails.');
+    }
+});
+
+/**
+ * Fonction générique d’envoi d’email
+ * @param {string} to - Destinataire
+ * @param {string} subject - Objet du mail
+ * @param {string} htmlContent - Contenu HTML
+ * @param {Array} attachments - Pièces jointes (optionnelles)
+ */
+async function sendEmail(to, subject, htmlContent, attachments = []) {
     try {
-        const sendSmtpEmail = {
-            sender: { name: 'GABConcours', email: process.env.EMAIL_FROM },
-            to: [{ email: to }],
+        const mailOptions = {
+            from: {
+                name: 'GABConcours',
+                address: process.env.EMAIL_FROM || process.env.EMAIL_USER
+            },
+            to,
             subject,
-            htmlContent
+            html: htmlContent,
+            attachments
         };
 
-        const response = await tranEmailApi.sendTransacEmail(sendSmtpEmail);
-        console.log(`📩 Email envoyé à ${to} | ID: ${response.messageId}`);
-        return { success: true, messageId: response.messageId };
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`📩 Email envoyé à ${to} | MessageID: ${info.messageId}`);
+        return { success: true, messageId: info.messageId };
     } catch (error) {
-        console.error('❌ Erreur envoi email via API Brevo:', error.response?.body || error.message);
+        console.error('❌ Erreur envoi email:', error.message);
         return { success: false, message: error.message };
     }
 }

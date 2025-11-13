@@ -30,7 +30,7 @@ const DocumentReplacementForm: React.FC<DocumentReplacementFormProps> = ({
       const candidatData = JSON.parse(localStorage.getItem('candidatData') || '{}');
       const token = candidatData.token || localStorage.getItem('token');
       
-      const response = await fetch(`https://gabonconcours-1.onrender.com/api/documents/${documentId}/replace`, {
+      const response = await fetch(`http://localhost:3001/api/documents/${documentId}/replace`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -85,7 +85,7 @@ const Documents = () => {
                 description: `Les documents ont été uploadés.`,
             });
             setTimeout(() => {
-                navigate(`/dashboard/${encodeURIComponent(numeroCandidature!)}`);
+                navigate(`/succes/${encodeURIComponent(numeroCandidature!)}`);
             }, 1500); // Redirection plus rapide
         },
         onError: (error) => {
@@ -233,7 +233,7 @@ const Documents = () => {
         });
     };
 
-
+    // --- Logique Documents Personnalisés ---
 
     const addCustomDocumentField = () => {
         const newKey = `custom_${Date.now()}_${customDocsCounter}`;
@@ -505,7 +505,7 @@ const Documents = () => {
                                     ? 'Enregistrement en cours...'
                                     : uploadSuccess
                                         ? 'Redirection...'
-                                        : 'Enregistrer '}
+                                        : 'Enregistrer et continuer vers le paiement'}
                             </Button>
                         </div>
 

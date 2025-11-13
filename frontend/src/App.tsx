@@ -66,7 +66,6 @@ import MessagerieAdminPage from './pages/admin/MessagerieAdminPage';
 import SousAdminsPage from './pages/admin/SousAdminsPage';
 import MatieresManagementPage from './pages/admin/MatieresManagementPage';
 import APropos from './pages/APropos';
-import SuperAdminManagement from './pages/admin/SuperAdminManagement';
 
 
 const queryClient = new QueryClient({
@@ -187,11 +186,6 @@ function App() {
                             }/>
 
 
-                            <Route path="filiere-matieres" element={
-                                <SuperAdminRoute>
-                                    <FiliereMatieresManagement/>
-                                </SuperAdminRoute>
-                            }/>
                             <Route path="logs-admin" element={
                                 <SuperAdminRoute>
                                     <AdminLogsView/>
@@ -212,16 +206,10 @@ function App() {
                                     <GestionConcoursFilieresPage/>
                                 </SuperAdminRoute>
                             }/>
-
-                            <Route path="matieres" element={
-                                <SuperAdminRoute>
-                                    <SuperAdminManagement/>
-                                </SuperAdminRoute>
-                            }/>
-                            <Route path="messageries" element={<MessagerieAdminPage/>}/>
-                            <Route path="sousadmins" element={<SousAdminsPage/>}/>
+                            <Route path="messagerie" element={<MessagerieAdminPage/>}/>
+                            <Route path="sous-admins" element={<SousAdminsPage/>}/>
                             <Route path="matieres" element={<MatieresManagementPage/>}/>
-                            <Route path="logss" element={<LogsPageEnhanced/>}/>
+                            <Route path="logs" element={<LogsPageEnhanced/>}/>
                             <Route path="support" element={
                                 <SuperAdminRoute>
                                     <SuperAdminSupport/>

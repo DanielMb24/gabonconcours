@@ -39,8 +39,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = memo(({children}) => {
                 { path: '/admin/candList', label: 'Candidats', icon: Users },
                 { path: '/admin/concours-filieres', label: 'Concours x Filières', icon: Trophy },
                 { path: '/admin/filiere-matieres', label: 'Filières x Matières', icon: BookOpen },
-                 { path: '/admin/matieres', label: 'Matières', icon: BookOpen },
-                
                 { path: '/admin/logs', label: 'Journal d\'activité', icon: FileText },
                 { path: '/admin/support', label: 'Support client', icon: UserCog },
                 { path: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },

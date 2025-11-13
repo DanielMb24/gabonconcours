@@ -1,10 +1,7 @@
 // services/scanDocument.ts
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://gabonconcours-1.onrender.com/api" // backend Render
-  : "http://localhost:10000/api"; // backend local
-
+const API_BASE_URL = 'http://localhost:3001/api';
 
 export interface ScanResult {
     nom?: string;
