@@ -74,7 +74,7 @@ const FiliereConcoursFilter: React.FC = () => {
       if (!selectedEtablissement || selectedEtablissement === 'all') return [];
       
       const response = await apiService.makeRequest<Concours[]>(
-        `/concours`,
+        "/concours",
         'GET'
       );
       

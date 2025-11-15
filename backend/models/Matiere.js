@@ -4,7 +4,7 @@ class Matiere {
     static async findAll() {
         const connection = getConnection();
         const [rows] = await connection.execute(
-            `SELECT * FROM matieres ORDER BY nom_matiere ASC`
+            "SELECT * FROM matieres ORDER BY nom_matiere ASC"
         );
         return rows;
     }
@@ -12,7 +12,7 @@ class Matiere {
     static async findById(id) {
         const connection = getConnection();
         const [rows] = await connection.execute(
-            `SELECT * FROM matieres WHERE id = ?`,
+            "SELECT * FROM matieres WHERE id = ?",
             [id]
         );
         return rows[0] || null;

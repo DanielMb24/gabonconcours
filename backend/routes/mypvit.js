@@ -46,7 +46,7 @@ router.post('/init', async (req, res) => {
             // Mettre à jour avec transaction_id si disponible
             if (paymentInit.transaction_id) {
                 await connection.execute(
-                    `UPDATE paiements SET reference_paiement = ? WHERE id = ?`,
+                    "UPDATE paiements SET reference_paiement = ? WHERE id = ?",
                     [paymentInit.transaction_id, paiementResult.insertId]
                 );
             }
@@ -64,7 +64,7 @@ router.post('/init', async (req, res) => {
             });
         } else {
             // Supprimer le paiement en cas d'échec
-            await connection.execute(`DELETE FROM paiements WHERE id = ?`, [paiementResult.insertId]);
+            await connection.execute("DELETE FROM paiements WHERE id = ?", [paiementResult.insertId]);
             
             return res.status(500).json({
                 success: false,
@@ -113,7 +113,7 @@ router.post('/callback', async (req, res) => {
             if (nupcan) {
                 // Récupérer le candidat
                 const [candidats] = await connection.execute(
-                    `SELECT * FROM candidats WHERE nupcan = ?`,
+                    "SELECT * FROM candidats WHERE nupcan = ?",
                     [nupcan]
                 );
 
@@ -133,7 +133,7 @@ router.post('/callback', async (req, res) => {
                     // Si tous les documents ET le paiement sont validés, changer le statut
                     if (total > 0 && total === valides) {
                         await connection.execute(
-                            `UPDATE candidats SET statut = 'valide' WHERE nupcan = ?`,
+                            "UPDATE candidats SET statut = 'valide' WHERE nupcan = ?",
                             [nupcan]
                         );
 
